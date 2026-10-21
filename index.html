@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulldogs Card Picker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@400;500;600&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+  /* Layout: poster wall. Numbered template grid, tap to enlarge, pick one, fill the short form, copy the message. */
+  :root {
+    --bg: #f3f1ea;
+    --surface: #ffffff;
+    --fg: #16211c;
+    --muted: #5d6a63;
+    --line: #d9d6cb;
+    --accent: #0f7a4a;      /* pitch green */
+    --accent-ink: #ffffff;
+    --mark: #b32a2a;        /* jersey maroon-red */
+    --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+    --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121815; --surface: #1b231e; --fg: #eef1ec; --muted: #a3ada6; --line: #2d3832;
+      --accent: #3fb77d; --accent-ink: #0b1a12; --mark: #e2635f; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121815; --surface: #1b231e; --fg: #eef1ec; --muted: #a3ada6; --line: #2d3832;
+    --accent: #3fb77d; --accent-ink: #0b1a12; --mark: #e2635f; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+  .wrap {
+    max-width: 1100px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 64px;
+  }
+  header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; border-bottom: 3px solid var(--fg); padding-bottom: 14px; }
+  h1 { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 9vw, 84px); line-height: .9; margin: 0; text-transform: uppercase; letter-spacing: .01em; text-wrap: balance; }
+  h1 span { color: var(--mark); }
+  .lede { max-width: 42ch; margin: 0; color: var(--muted); }
+  .steps { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 18px 0 26px; padding: 0; list-style: none; font-size: 14px; color: var(--muted); }
+  .steps li b { color: var(--fg); font-family: var(--display); font-size: 20px; margin-right: 6px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 22px 18px; }
+  .card { background: var(--surface); border: 1px solid var(--line); padding: 10px; display: flex; flex-direction: column; gap: 10px; transition: transform .15s; }
+  .card:hover { transform: translateY(-3px); }
+  .card.picked { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .thumb { position: relative; margin: 0; padding: 0; border: 0; background: var(--bg); cursor: zoom-in; aspect-ratio: 2 / 3; max-width: 100%; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .num { position: absolute; top: 0; left: 0; background: var(--fg); color: var(--bg); font-family: var(--display); font-weight: 900; font-size: 28px; line-height: 1; padding: 6px 10px 4px; }
+  .meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .name { font-family: var(--display); font-weight: 700; font-size: 24px; text-transform: uppercase; letter-spacing: .02em; line-height: 1; }
+  .vibe { font-size: 13px; color: var(--muted); margin: -4px 0 0; }
+  .pick { font: 600 14px var(--body); background: var(--accent); color: var(--accent-ink); border: 0; padding: 9px 14px; cursor: pointer; text-transform: uppercase; letter-spacing: .06em; }
+  .pick:hover, .pick:focus-visible { filter: brightness(1.08); outline: 2px solid var(--fg); outline-offset: 2px; }
+  .card.picked .pick { background: var(--fg); color: var(--bg); }
+
+  /* lightbox */
+  .box { position: fixed; inset: 0; background: rgba(0,0,0,.85); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 20; }
+  .box img { max-height: 92vh; max-width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  .box .cap { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); color: #fff; font-family: var(--display); font-size: 26px; text-transform: uppercase; }
+  .box .x { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); background: #fff; color: #000; border: 0; width: 40px; height: 40px; font-size: 22px; cursor: pointer; }
+
+  /* form */
+  .form { margin-top: 44px; background: var(--surface); border: 1px solid var(--line); border-top: 6px solid var(--accent); padding: 22px; }
+  .form h2 { font-family: var(--display); font-size: 36px; margin: 0 0 4px; text-transform: uppercase; line-height: 1; }
+  .form p { margin: 0 0 18px; color: var(--muted); }
+  .chosen { font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--accent); }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+  label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); min-width: 0; }
+  input, select, textarea { font: 16px var(--body); padding: 10px 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); width: 100%; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .full { grid-column: 1 / -1; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; align-items: center; }
+  a.btn { text-decoration: none; display: inline-block; }
+  .btn { font: 600 15px var(--body); border: 2px solid var(--fg); background: var(--fg); color: var(--bg); padding: 11px 18px; cursor: pointer; text-transform: uppercase; letter-spacing: .06em; }
+  .btn.ghost { background: transparent; color: var(--fg); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .out { margin-top: 16px; }
+  .out textarea { min-height: 150px; resize: vertical; }
+  .note { font-size: 14px; color: var(--muted); margin-top: 8px; }
+  .ok { color: var(--accent); font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Bulldogs <span>Card</span> Picker</h1>
+    <p class="lede">Pick a design for your player's card, fill in the details, and send me the message it makes. I'll do the rest.</p>
+  </header>
+
+  <ol class="steps">
+    <li><b>1</b>Tap a card to see it bigger</li>
+    <li><b>2</b>Hit Pick this one</li>
+    <li><b>3</b>Fill in the player's info and copy the message</li>
+  </ol>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="form" id="form">
+    <h2>Player details</h2>
+    <p>Chosen design: <span class="chosen" id="chosen">none yet, pick one above</span></p>
+    <form id="req">
+      <div class="fields">
+        <label>First name <input id="first" required autocomplete="off"></label>
+        <label>Last name <input id="last" required autocomplete="off"></label>
+        <label>Jersey number <input id="num" inputmode="numeric" placeholder="10"></label>
+        <label>Position
+          <select id="pos">
+            <option>Goalkeeper</option><option>Defender</option><option>Midfielder</option><option>Forward</option><option>Striker</option><option>Winger</option>
+          </select>
+        </label>
+        <label>Team <input id="team" value="Bulldogs Boys"></label>
+        <label>Year <input id="year" value="2026" inputmode="numeric"></label>
+        <label class="full">Parent name and best way to reach you <input id="contact" placeholder="Jane, text 919-555-0100"></label>
+        <label class="full">Anything else (favorite photo, colors, nickname) <textarea id="notes" rows="2"></textarea></label>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">Make my message</button>
+        <button class="btn ghost" type="button" id="copy" hidden>Copy message</button>
+        <a class="btn" id="email" hidden>Email it to Samson</a>
+        <a class="btn" id="sms" hidden>Text it to Samson</a>
+        <span id="status" class="note"></span>
+      </div>
+      <div class="out" id="out" hidden>
+        <label>Your message <textarea id="msg" readonly></textarea></label>
+        <p class="note">Use the Email or Text button (or copy it) and send it to me along with 1 or 2 action photos of your player (phone photos are fine, the bigger the better).</p>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div class="box" id="box" hidden>
+  <button class="x" id="close" aria-label="Close">×</button>
+  <img id="boximg" alt="">
+  <div class="cap" id="boxcap"></div>
+</div>
+
+<script>
+  var T = [
+    { n: 1, name: "Ember Smoke", vibe: "Orange smoke burst, black and white" },
+    { n: 2, name: "Sky Panels", vibe: "Tilted blue panels, clean and bright" },
+    { n: 3, name: "Blue Streak", vibe: "Big vertical name, racing stripes" },
+    { n: 4, name: "Torn Edge", vibe: "Ripped concrete, red headline" },
+    { n: 5, name: "Big Ball", vibe: "Soccer ball close-up, blue and orange" },
+    { n: 6, name: "Gold Splash", vibe: "Sepia stadium, gold paint splatter" },
+    { n: 7, name: "Stadium Fog", vibe: "Night lights and smoke, glowing text" },
+    { n: 8, name: "Blue Arc", vibe: "Royal blue curve over the stadium" }
+  ];
+  var EMAIL = "polosam@gmail.com";
+  var PHONE = ""; // add Samson's cell number here, digits only, to enable the Text button
+  var picked = null;
+  var grid = document.getElementById("grid");
+  T.forEach(function (t) {
+    var c = document.createElement("article");
+    c.className = "card"; c.id = "t" + t.n;
+    c.innerHTML =
+      '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="img/t' + t.n + '.jpg" alt="Template ' + t.n + ', ' + t.name + '" loading="lazy"></button>' +
+      '<div class="meta"><div class="name">' + t.name + '</div><button class="pick" type="button">Pick this one</button></div>' +
+      '<p class="vibe">' + t.vibe + '</p>';
+    c.querySelector(".thumb").addEventListener("click", function () { open(t); });
+    c.querySelector(".pick").addEventListener("click", function () { pick(t); });
+    grid.appendChild(c);
+  });
+
+  function pick(t) {
+    picked = t;
+    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", c.id === "t" + t.n); });
+    document.getElementById("chosen").textContent = "#" + t.n + " " + t.name;
+    document.getElementById("form").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  var box = document.getElementById("box");
+  function open(t) {
+    document.getElementById("boximg").src = "img/t" + t.n + ".jpg";
+    document.getElementById("boxcap").textContent = "#" + t.n + " " + t.name;
+    box.hidden = false;
+  }
+  function close() { box.hidden = true; }
+  document.getElementById("close").addEventListener("click", close);
+  box.addEventListener("click", function (e) { if (e.target === box) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+
+  var status = document.getElementById("status");
+  document.getElementById("req").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!picked) { status.textContent = "Pick a design first (tap Pick this one on a card)."; status.className = "note"; return; }
+    var v = function (id) { return document.getElementById(id).value.trim(); };
+    var lines = [
+      "Soccer card request",
+      "Design: #" + picked.n + " " + picked.name,
+      "Player: " + v("first") + " " + v("last"),
+      "Number: " + (v("num") || "none"),
+      "Position: " + v("pos"),
+      "Team: " + v("team"),
+      "Year: " + v("year"),
+      "Contact: " + (v("contact") || "see sender"),
+    ];
+    if (v("notes")) lines.push("Notes: " + v("notes"));
+    document.getElementById("msg").value = lines.join("\n");
+    document.getElementById("out").hidden = false;
+    document.getElementById("copy").hidden = false;
+    var body = lines.join("\n");
+    var em = document.getElementById("email");
+    em.href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Soccer card: " + v("first") + " " + v("last")) + "&body=" + encodeURIComponent(body);
+    em.hidden = false;
+    var sm = document.getElementById("sms");
+    if (PHONE) { sm.href = "sms:" + PHONE + "?&body=" + encodeURIComponent(body); sm.hidden = false; }
+    status.textContent = "";
+  });
+  document.getElementById("copy").addEventListener("click", function () {
+    var ta = document.getElementById("msg");
+    var done = function () { status.textContent = "Copied."; status.className = "note ok"; };
+    var fallback = function () { ta.focus(); ta.select(); status.textContent = "Select the text above and copy it."; status.className = "note"; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, fallback);
+    else fallback();
+  });
+</script>
+
+</body>
+</html>
