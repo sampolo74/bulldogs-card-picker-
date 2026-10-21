@@ -122,15 +122,13 @@
         <label class="full">Anything else (favorite photo, colors, nickname) <textarea id="notes" rows="2"></textarea></label>
       </div>
       <div class="actions">
-        <button class="btn" type="submit">Make my message</button>
+        <button class="btn" type="submit" id="send">Send to Samson</button>
         <button class="btn ghost" type="button" id="copy" hidden>Copy message</button>
-        <a class="btn" id="email" hidden>Email it to Samson</a>
-        <a class="btn" id="sms" hidden>Text it to Samson</a>
-        <span id="status" class="note"></span>
+                <span id="status" class="note"></span>
       </div>
       <div class="out" id="out" hidden>
-        <label>Your message <textarea id="msg" readonly></textarea></label>
-        <p class="note">Use the Email or Text button (or copy it) and send it to me along with 1 or 2 action photos of your player (phone photos are fine, the bigger the better).</p>
+        <p class="note" id="done"></p>
+        <label>Copy of your request <textarea id="msg" readonly></textarea></label>
       </div>
     </form>
   </section>
@@ -153,8 +151,7 @@
     { n: 7, name: "Stadium Fog", vibe: "Night lights and smoke, glowing text" },
     { n: 8, name: "Blue Arc", vibe: "Royal blue curve over the stadium" }
   ];
-  var EMAIL = "polosam@gmail.com";
-  var PHONE = ""; // add Samson's cell number here, digits only, to enable the Text button
+  var KEY = "29fea687-26fa-466e-81ae-d5277b4fd706";
   var picked = null;
   var grid = document.getElementById("grid");
   T.forEach(function (t) {
@@ -203,16 +200,32 @@
       "Contact: " + (v("contact") || "see sender"),
     ];
     if (v("notes")) lines.push("Notes: " + v("notes"));
-    document.getElementById("msg").value = lines.join("\n");
-    document.getElementById("out").hidden = false;
-    document.getElementById("copy").hidden = false;
     var body = lines.join("\n");
-    var em = document.getElementById("email");
-    em.href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Soccer card: " + v("first") + " " + v("last")) + "&body=" + encodeURIComponent(body);
-    em.hidden = false;
-    var sm = document.getElementById("sms");
-    if (PHONE) { sm.href = "sms:" + PHONE + "?&body=" + encodeURIComponent(body); sm.hidden = false; }
-    status.textContent = "";
+    document.getElementById("msg").value = body;
+    var btn = document.getElementById("send");
+    btn.disabled = true; btn.textContent = "Sending...";
+    status.textContent = ""; status.className = "note";
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        access_key: KEY,
+        subject: "Soccer card: " + v("first") + " " + v("last") + " (#" + picked.n + " " + picked.name + ")",
+        from_name: "Bulldogs Card Picker",
+        message: body
+      })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.success) throw new Error(j.message || "failed");
+      document.getElementById("done").innerHTML = "<span class=\"ok\">Sent.</span> Samson has your request. One more thing: text or email him 1 or 2 action photos of your player (phone photos are fine, the bigger the better).";
+      document.getElementById("out").hidden = false;
+      document.getElementById("copy").hidden = false;
+      btn.textContent = "Sent";
+    }).catch(function () {
+      document.getElementById("done").textContent = "It didn't go through. Copy the request below and text or email it to Samson instead.";
+      document.getElementById("out").hidden = false;
+      document.getElementById("copy").hidden = false;
+      btn.disabled = false; btn.textContent = "Try again";
+    });
   });
   document.getElementById("copy").addEventListener("click", function () {
     var ta = document.getElementById("msg");
