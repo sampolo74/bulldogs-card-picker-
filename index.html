@@ -68,13 +68,13 @@
   .card:hover { transform: translateY(-4px); border-color: #3a414c; }
   .card.picked { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
   .thumb { position: relative; margin: 0; padding: 0; border: 0; background: #000; cursor: zoom-in; aspect-ratio: 3/4; overflow: hidden; width: 100%; }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; image-rendering: auto; }
   .card:hover .thumb img { transform: scale(1.03); }
   .num { position: absolute; top: 0; left: 0; background: var(--maroon-hot); color: #fff; font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; padding: 7px 10px 5px; }
   .tag { position: absolute; bottom: 8px; left: 8px; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.65); color: #fff; padding: 3px 7px; }
   .meta { padding: 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
-  .name { font-family: var(--cond); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: .03em; line-height: 1; }
-  .vibe { font-size: 13px; color: var(--muted); margin: 0; min-height: 2.6em; }
+  .name { font-family: var(--cond); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: .03em; line-height: 1; min-height: 1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vibe { font-size: 13px; color: var(--muted); margin: 0; min-height: 2.6em; line-height: 1.3; }
   .pick { font: 700 13px var(--cond); font-size: 15px; letter-spacing: .1em; background: transparent; color: var(--fg); border: 1px solid var(--fg); padding: 9px 12px; cursor: pointer; text-transform: uppercase; }
   .pick:hover { background: var(--fg); color: var(--bg); }
   .card.picked .pick { background: var(--gold); border-color: var(--gold); color: #1a1200; }
@@ -82,7 +82,7 @@
 
   /* lightbox */
   .box { position: fixed; inset: 0; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 20; }
-  .box img { max-height: 88vh; max-width: min(100%, 560px); box-shadow: 0 20px 60px rgba(0,0,0,.8); }
+  .box img { max-height: 90vh; max-width: min(100%, 680px); box-shadow: 0 20px 60px rgba(0,0,0,.8); }
   .box .cap { position: absolute; left: 50%; transform: translateX(-50%); bottom: 16px; color: #fff; font-family: var(--cond); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: .06em; display: flex; gap: 12px; align-items: center; }
   .box .cap button { font: 700 14px var(--cond); letter-spacing: .1em; text-transform: uppercase; background: var(--gold); color: #1a1200; border: 0; padding: 8px 14px; cursor: pointer; }
   .box .x, .box .nav { position: absolute; background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.3); width: 44px; height: 44px; font-size: 22px; cursor: pointer; }
@@ -136,7 +136,7 @@
       <a class="cta" href="#designs">Browse the designs ↓</a>
     </div>
     <div class="fan" aria-hidden="true">
-      <img src="img/t22.jpg" alt=""><img src="img/t13.jpg" alt=""><img src="img/t21.jpg" alt=""><img src="img/t17.jpg" alt="">
+      <img src="img/thumb/t22.jpg" alt=""><img src="img/thumb/t13.jpg" alt=""><img src="img/thumb/t21.jpg" alt=""><img src="img/thumb/t17.jpg" alt="">
     </div>
   </div>
 </header>
@@ -247,7 +247,7 @@
     var c = document.createElement("article");
     c.className = "card"; c.id = "t" + t.n; c.dataset.f = t.f;
     c.innerHTML =
-      '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="img/t' + t.n + '.jpg" alt="Design ' + t.n + ', ' + t.name + '" loading="lazy"><span class="tag">' + LABEL[t.f] + '</span></button>' +
+      '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="img/thumb/t' + t.n + '.jpg" alt="Design ' + t.n + ', ' + t.name + '" loading="lazy"><span class="tag">' + LABEL[t.f] + '</span></button>' +
       '<div class="meta"><div class="name">' + t.name + '</div><p class="vibe">' + t.vibe + '</p><button class="pick" type="button">Pick this one</button></div>';
     c.querySelector(".thumb").addEventListener("click", function () { open(i); });
     c.querySelector(".pick").addEventListener("click", function () { pick(t); });
@@ -279,6 +279,7 @@
   function show() {
     var t = T[cur];
     document.getElementById("boximg").src = "img/t" + t.n + ".jpg";
+    document.getElementById("boximg").alt = "Design " + t.n + ", " + t.name;
     document.getElementById("boxcap").textContent = "#" + t.n + " " + t.name;
   }
   function open(i) { cur = i; show(); box.hidden = false; }
