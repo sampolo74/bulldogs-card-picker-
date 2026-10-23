@@ -114,6 +114,9 @@
   .card:hover .foil { opacity: 1; }
   .num { position: absolute; top: 0; left: 0; background: var(--maroon-hot); color: #fff; font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; padding: 7px 10px 5px; }
   .tagl { position: absolute; bottom: 8px; left: 8px; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.65); color: #fff; padding: 3px 7px; }
+  .kindl { position: absolute; top: 50px; right: 8px; font: 800 11px var(--cond); letter-spacing: .14em; text-transform: uppercase; background: var(--gold); color: var(--night); padding: 4px 8px; border-radius: 3px; }
+  .chip.poster { border-color: var(--gold); color: var(--gold); }
+  .chip.poster.on { background: var(--gold); color: var(--night); }
   .fav { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(0,0,0,.55); color: #fff; font-size: 17px; cursor: pointer; display: grid; place-items: center; transition: transform .2s var(--ease), background .2s; }
   .fav:hover { transform: scale(1.12); }
   .fav.on { background: var(--maroon-hot); }
@@ -217,11 +220,11 @@
     <div>
       <p class="kicker">Bulldogs Cards · 2026 season</p>
       <h1>Pick your<br>player's<br>card</h1>
-      <p class="lede">76 designs: trading cards and full-size posters for soccer, baseball and football. Pick a design, type in your player's details, and Samson builds it and gets it back to you. Free for Bulldogs families.</p>
+      <p class="lede">76 designs for soccer, baseball and football: classic trading cards plus full-size cut-out posters, all in one lineup. Pick a design, type in your player's details, and Samson builds it and gets it back to you. Free for Bulldogs families.</p>
       <div class="sportpick" id="sportpick" role="tablist" aria-label="Sport">
-        <button role="tab" data-s="soccer" class="on"><span class="ico">⚽</span><span class="nm">Soccer</span><span class="ct">37 cards · 5 posters</span></button>
-        <button role="tab" data-s="baseball"><span class="ico">⚾</span><span class="nm">Baseball</span><span class="ct">12 cards · 5 posters</span></button>
-        <button role="tab" data-s="football"><span class="ico">🏈</span><span class="nm">Football</span><span class="ct">12 cards · 5 posters</span></button>
+        <button role="tab" data-s="soccer" class="on"><span class="ico">⚽</span><span class="nm">Soccer</span><span class="ct">42 designs</span></button>
+        <button role="tab" data-s="baseball"><span class="ico">⚾</span><span class="nm">Baseball</span><span class="ct">17 designs</span></button>
+        <button role="tab" data-s="football"><span class="ico">🏈</span><span class="nm">Football</span><span class="ct">17 designs</span></button>
       </div>
     </div>
     <div class="stage" id="stage">
@@ -234,7 +237,7 @@
 </header>
 
 <section class="wrap steps" id="steps">
-  <div class="step" id="s1"><b>1</b><div><strong>Pick a design</strong><span>Choose your sport and card or poster. Tap any one to see it big, then hit Pick this one.</span></div></div>
+  <div class="step" id="s1"><b>1</b><div><strong>Pick a design</strong><span>Choose your sport, then browse cards and posters together. Tap any one to see it big, then hit Pick this one.</span></div></div>
   <div class="step" id="s2"><b>2</b><div><strong>Fill in the details</strong><span>Name, number, position, and whether you want the NBT logo. Watch the preview update.</span></div></div>
   <div class="step" id="s3"><b>3</b><div><strong>Send it</strong><span>Hit Send. Then text or email Samson 1 or 2 action photos of your player.</span></div></div>
 </section>
@@ -245,10 +248,6 @@
       <button data-s="soccer" class="on">⚽ Soccer</button>
       <button data-s="baseball">⚾ Baseball</button>
       <button data-s="football">🏈 Football</button>
-    </div>
-    <div class="seg" id="segKind">
-      <button data-k="cards" class="on">Cards</button>
-      <button data-k="posters">Posters</button>
     </div>
     <div class="chips" id="chips"></div>
     <div class="right">
@@ -273,7 +272,7 @@
     </aside>
     <div class="panel">
       <h2>Player details</h2>
-      <p>Chosen design: <span class="chosen" id="chosen">none yet, pick one above</span></p>
+      <p>Chosen design: <span class="chosen" id="chosen">none yet, pick one above</span> <span class="note" id="photoNote"></span></p>
       <form id="req">
         <div class="fields">
           <label>First name <input id="first" required autocomplete="off"></label>
@@ -425,24 +424,28 @@
       ]
     }
   };
-  var INTRO = {
-    cards: "Classic trading cards. Two photo frames, big name down the side, number and position.",
-    posters: "Full-size posters. Your player is cut out of the photo and dropped into the scene, like a pro's wall poster. Needs one clear head-and-shoulders photo and one action shot."
-  };
+  // One lineup per sport: cards first, then posters numbered on from the last card.
+  Object.keys(SPORTS).forEach(function (s) {
+    var SS = SPORTS[s];
+    SS.cards.forEach(function (t) { t.k = "cards"; t.img = SS.p + t.n; });
+    SS.posters.forEach(function (t, i) { t.k = "posters"; t.img = SS.pp + t.n; t.n = SS.cards.length + i + 1; });
+    SS.all = SS.cards.concat(SS.posters);
+  });
+  var INTRO = "Trading cards and full-size posters, side by side. Cards use 1 or 2 action photos. Posters (gold tag) cut your player out of the photo and drop them into the scene, like a pro's wall poster.";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $ = function (id) { return document.getElementById(id); };
 
   // ---------- state ----------
-  var sport = "soccer", kind = "cards", filter = "all", query = "";
+  var sport = "soccer", filter = "all", query = "";
   var picked = null, cur = 0, LIST = [];
   var favs = [];
   try { favs = JSON.parse(localStorage.getItem("bulldogs-favs") || "[]"); } catch (e) { favs = []; }
 
   function S() { return SPORTS[sport]; }
-  function prefix(k, s) { return (k || kind) === "posters" ? SPORTS[s || sport].pp : SPORTS[s || sport].p; }
-  function imgSrc(t, thumb, k, s) { return "img/" + (thumb ? "thumb/" : "") + prefix(k, s) + t.n + ".jpg"; }
-  function title(t, k, s) { var SS = SPORTS[s || sport]; return SS.label + " " + ((k || kind) === "posters" ? "poster" : "card") + " #" + t.n + " " + t.name; }
-  function key(t, k, s) { return (s || sport) + "/" + (k || kind) + "/" + t.n; }
+  function imgSrc(t, thumb) { return "img/" + (thumb ? "thumb/" : "") + t.img + ".jpg"; }
+  function kindWord(t) { return t.k === "posters" ? "poster" : "card"; }
+  function title(t, s) { return SPORTS[s || sport].label + " " + kindWord(t) + " #" + t.n + " " + t.name; }
+  function key(t, s) { return (s || sport) + "/" + t.img; }
 
   // ---------- hero sky ----------
   (function sky() {
@@ -469,12 +472,12 @@
   function buildHolo() {
     holoList = [];
     ["soccer", "baseball", "football"].forEach(function (s) {
-      SPORTS[s].cards.slice(-4).forEach(function (t) { holoList.push({ s: s, k: "cards", t: t }); });
-      SPORTS[s].posters.slice(0, 2).forEach(function (t) { holoList.push({ s: s, k: "posters", t: t }); });
+      SPORTS[s].cards.slice(-4).forEach(function (t) { holoList.push({ s: s, t: t }); });
+      SPORTS[s].posters.slice(0, 2).forEach(function (t) { holoList.push({ s: s, t: t }); });
     });
     holoList.sort(function () { return Math.random() - .5; });
     holo.querySelectorAll("img").forEach(function (i) { i.remove(); });
-    holoList.forEach(function (h) { var im = new Image(); im.src = imgSrc(h.t, true, h.k, h.s); im.alt = ""; holo.insertBefore(im, holo.firstChild); });
+    holoList.forEach(function (h) { var im = new Image(); im.src = imgSrc(h.t, true); im.alt = ""; holo.insertBefore(im, holo.firstChild); });
     showHolo(0);
     clearInterval(holoTimer);
     if (!reduce) holoTimer = setInterval(function () { showHolo(holoI + 1); }, 2800);
@@ -484,7 +487,7 @@
     var imgs = holo.querySelectorAll("img");
     imgs.forEach(function (im, j) { im.classList.toggle("on", j === holoList.length - 1 - holoI); });
     var h = holoList[holoI];
-    $("holotag").innerHTML = SPORTS[h.s].ball + " <b>" + h.t.name + "</b> · " + SPORTS[h.s].label + " " + (h.k === "posters" ? "poster" : "card");
+    $("holotag").innerHTML = SPORTS[h.s].ball + " <b>" + h.t.name + "</b> · " + SPORTS[h.s].label + " " + kindWord(h.t);
   }
   function tilt(el, e, max) {
     var r = el.getBoundingClientRect();
@@ -500,25 +503,24 @@
     stage.addEventListener("pointerleave", function () { untilt(holo); });
   }
   holo.addEventListener("click", function () {
-    var h = holoList[holoI]; sport = h.s; kind = h.k; render();
-    var t = h.t; var i = LIST.indexOf(t); if (i >= 0) open(i);
+    var h = holoList[holoI]; sport = h.s; render();
+    var i = LIST.indexOf(h.t); if (i >= 0) open(i);
   });
   buildHolo();
 
   // ---------- render grid ----------
   function render() {
-    var SS = S(); LIST = SS[kind]; filter = "all";
+    var SS = S(); LIST = SS.all; filter = "all";
     document.querySelectorAll("#sportpick button, #segSport button").forEach(function (b) { b.classList.toggle("on", b.dataset.s === sport); });
-    document.querySelectorAll("#segKind button").forEach(function (b) { b.classList.toggle("on", b.dataset.k === kind); });
-    $("introH").textContent = SS.label + " " + kind;
-    $("introP").textContent = INTRO[kind];
+    $("introH").textContent = SS.label + " designs";
+    $("introP").textContent = INTRO;
     var grid = $("grid"); grid.innerHTML = "";
     LIST.forEach(function (t, i) {
       var c = document.createElement("article");
-      c.className = "card"; c.id = "c-" + prefix() + t.n; c.dataset.f = t.f; c.dataset.q = (t.name + " " + t.vibe + " " + LABEL[t.f]).toLowerCase();
+      c.className = "card"; c.id = "c-" + t.img; c.dataset.f = t.f; c.dataset.k = t.k; c.dataset.q = (t.name + " " + t.vibe + " " + LABEL[t.f] + " " + kindWord(t)).toLowerCase();
       var isFav = favs.indexOf(key(t)) >= 0;
       c.innerHTML =
-        '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="' + imgSrc(t, true) + '" alt="' + title(t) + '" loading="lazy"><span class="foil"></span><span class="tagl">' + LABEL[t.f] + '</span></button>' +
+        '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="' + imgSrc(t, true) + '" alt="' + title(t) + '" loading="lazy"><span class="foil"></span><span class="tagl">' + LABEL[t.f] + '</span>' + (t.k === "posters" ? '<span class="kindl">Poster</span>' : '') + '</button>' +
         '<button class="fav' + (isFav ? " on" : "") + '" type="button" aria-label="Shortlist ' + t.name + '" aria-pressed="' + isFav + '">' + (isFav ? "♥" : "♡") + '</button>' +
         '<div class="meta"><div class="name">' + t.name + '</div><p class="vibe">' + t.vibe + '</p><button class="pick" type="button">Pick this one</button></div>';
       c.querySelector(".thumb").addEventListener("click", function () { open(i); });
@@ -531,7 +533,7 @@
       grid.appendChild(c);
     });
     var have = {}; LIST.forEach(function (t) { have[t.f] = 1; });
-    var chips = '<button class="chip on" data-f="all">All</button>';
+    var chips = '<button class="chip on" data-f="all">All</button><button class="chip" data-f="cards">Cards</button><button class="chip poster" data-f="posters">Posters</button>';
     ORDER.forEach(function (k) { if (have[k]) chips += '<button class="chip" data-f="' + k + '">' + LABEL[k] + '</button>'; });
     $("chips").innerHTML = chips;
     document.querySelectorAll(".chip").forEach(function (b) {
@@ -543,7 +545,6 @@
     var pos = $("pos"); pos.innerHTML = "";
     SS.positions.forEach(function (p) { var o = document.createElement("option"); o.textContent = p; pos.appendChild(o); });
     if (!teamTouched) $("team").value = SS.team;
-    if (picked && (picked.s !== sport || picked.k !== kind)) { /* keep pick across tabs */ }
     markPicked();
     applyFilter();
     renderTray();
@@ -552,14 +553,14 @@
   function applyFilter() {
     var n = 0, q = query.trim().toLowerCase();
     document.querySelectorAll(".card").forEach(function (c) {
-      var show = (filter === "all" || c.dataset.f === filter) && (!q || c.dataset.q.indexOf(q) >= 0);
+      var show = (filter === "all" || c.dataset.f === filter || c.dataset.k === filter) && (!q || c.dataset.q.indexOf(q) >= 0);
       c.hidden = !show; if (show) n++;
     });
     $("count").textContent = n + " of " + LIST.length;
     $("empty").hidden = n > 0;
   }
   function markPicked() {
-    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", !!picked && picked.s === sport && picked.k === kind && c.id === "c-" + prefix() + picked.t.n); });
+    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", !!picked && picked.s === sport && c.id === "c-" + picked.t.img); });
   }
   $("q").addEventListener("input", function () { query = this.value; applyFilter(); });
   $("shuffle").addEventListener("click", function () {
@@ -572,20 +573,15 @@
   document.querySelectorAll("#sportpick button, #segSport button").forEach(function (b) {
     b.addEventListener("click", function () {
       sport = b.dataset.s; render();
-      if (history.replaceState) history.replaceState(null, "", "#" + sport + (kind === "posters" ? "-posters" : ""));
+      if (history.replaceState) history.replaceState(null, "", "#" + sport);
       $("designs").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     });
   });
-  document.querySelectorAll("#segKind button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      kind = b.dataset.k; render();
-      if (history.replaceState) history.replaceState(null, "", "#" + sport + (kind === "posters" ? "-posters" : ""));
-    });
-  });
+  var startFilter = "all";
   (function fromHash() {
     var h = location.hash.slice(1).split("-");
     if (SPORTS[h[0]]) sport = h[0];
-    if (h[1] === "posters") kind = "posters";
+    if (h[1] === "posters") startFilter = "posters";
   })();
 
   // ---------- shortlist ----------
@@ -597,17 +593,17 @@
   }
   function findByKey(k) {
     var p = k.split("/"); var SS = SPORTS[p[0]]; if (!SS) return null;
-    var t = SS[p[1]].filter(function (x) { return x.n == p[2]; })[0];
-    return t ? { s: p[0], k: p[1], t: t } : null;
+    var t = SS.all.filter(function (x) { return x.img === p[1]; })[0];
+    return t ? { s: p[0], t: t } : null;
   }
   function renderTray() {
     var tray = $("tray"), items = $("trayItems"); items.innerHTML = "";
     var list = favs.map(findByKey).filter(Boolean);
     list.forEach(function (h) {
-      var b = document.createElement("button"); b.type = "button"; b.title = title(h.t, h.k, h.s);
-      b.className = picked && picked.s === h.s && picked.k === h.k && picked.t.n === h.t.n ? "picked" : "";
-      b.innerHTML = '<img src="' + imgSrc(h.t, true, h.k, h.s) + '" alt="">';
-      b.addEventListener("click", function () { sport = h.s; kind = h.k; render(); pick(h.t); });
+      var b = document.createElement("button"); b.type = "button"; b.title = title(h.t, h.s);
+      b.className = picked && picked.s === h.s && picked.t === h.t ? "picked" : "";
+      b.innerHTML = '<img src="' + imgSrc(h.t, true) + '" alt="">';
+      b.addEventListener("click", function () { sport = h.s; render(); pick(h.t); });
       items.appendChild(b);
     });
     tray.classList.toggle("show", list.length > 0);
@@ -618,9 +614,10 @@
   var teamTouched = false;
   $("team").addEventListener("input", function () { teamTouched = true; });
   function pick(t) {
-    picked = { s: sport, k: kind, t: t };
+    picked = { s: sport, t: t };
     markPicked(); renderTray();
     $("chosen").textContent = title(t);
+    $("photoNote").textContent = t.k === "posters" ? "Posters need one clear head-and-shoulders photo and one action shot." : "Cards need 1 or 2 action photos.";
     $("s1").classList.add("done");
     close(); preview();
     $("form").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
@@ -633,7 +630,7 @@
     var first = v("first"), last = v("last"), num = v("num"), pos = $("pos").value;
     var logo = document.querySelector('input[name="logo"]:checked').value === "Yes";
     var nm = (first || last) ? (first + " " + last).trim() : "Player name";
-    pv.innerHTML = '<img src="' + imgSrc(picked.t, false, picked.k, picked.s) + '" alt="">' +
+    pv.innerHTML = '<img src="' + imgSrc(picked.t, false) + '" alt="">' +
       '<div class="plate"><span class="logo' + (logo ? "" : " off") + '">NBT</span><span class="pn">' + esc(nm) + '</span><span class="pj">' + (num ? "#" + esc(num) : "") + '</span><span class="pp">' + esc(pos) + ' · ' + esc(v("team") || SPORTS[picked.s].label) + ' ' + esc(v("year")) + '</span></div>';
     if (first || last) $("s2").classList.add("done");
   }
@@ -687,10 +684,10 @@
     e.preventDefault();
     if (!picked) { status.textContent = "Pick a design first (tap Pick this one on a card)."; status.className = "note"; $("designs").scrollIntoView({ behavior: "smooth" }); return; }
     var logo = document.querySelector('input[name="logo"]:checked').value;
-    var L = SPORTS[picked.s].label, K = picked.k === "posters" ? "poster" : "card";
+    var L = SPORTS[picked.s].label, K = kindWord(picked.t);
     var lines = [
       L + " " + K + " request",
-      "Design: " + title(picked.t, picked.k, picked.s),
+      "Design: " + title(picked.t, picked.s),
       "Player: " + v("first") + " " + v("last"),
       "Number: " + (v("num") || "none"),
       "Position: " + $("pos").value,
@@ -710,13 +707,13 @@
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         access_key: KEY,
-        subject: L + " " + K + ": " + v("first") + " " + v("last") + " (" + title(picked.t, picked.k, picked.s) + ", logo " + logo + ")",
+        subject: L + " " + K + ": " + v("first") + " " + v("last") + " (" + title(picked.t, picked.s) + ", logo " + logo + ")",
         from_name: "Bulldogs Card Picker",
         message: body
       })
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j.success) throw new Error(j.message || "failed");
-      $("done").innerHTML = "<span class=\"ok\">Sent.</span> Samson has your request. One more thing: text or email him " + (picked.k === "posters" ? "a clear head-and-shoulders photo and an action shot" : "1 or 2 action photos") + " of your player (phone photos are fine, the bigger the better).";
+      $("done").innerHTML = "<span class=\"ok\">Sent.</span> Samson has your request. One more thing: text or email him " + (picked.t.k === "posters" ? "a clear head-and-shoulders photo and an action shot" : "1 or 2 action photos") + " of your player (phone photos are fine, the bigger the better).";
       $("out").hidden = false; $("copy").hidden = false;
       btn.textContent = "Sent"; $("s3").classList.add("done"); confetti();
     }).catch(function () {
@@ -733,6 +730,7 @@
   });
 
   render();
+  if (startFilter !== "all") { var sc = document.querySelector('.chip[data-f="' + startFilter + '"]'); if (sc) sc.click(); }
 </script>
 </body>
 </html>
