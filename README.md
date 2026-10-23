@@ -1,7 +1,9 @@
 # Bulldogs Card Picker
 
-Sports card template picker for Bulldogs families: 37 soccer, 12 baseball and 12 football designs. Open the site, pick a sport, pick a design, fill in the player's details, and send the request.
+Sports card and poster picker for Bulldogs families: 61 trading cards (37 soccer, 12 baseball, 12 football) and 15 cut-out composite posters (5 per sport). Pick a sport, cards or posters, pick a design, fill in the player's details, and send the request.
 
-Deep links: `#soccer`, `#baseball`, `#football` open the site on that tab.
+Features: holographic hero card, 3D tilt on hover, style filters and search, "Surprise me", shortlist (saved in the browser), lightbox with keyboard and swipe, live preview with the player's name, confetti on send.
 
-Images: `img/t*.jpg` soccer, `img/b*.jpg` baseball, `img/f*.jpg` football (1200px). Grid thumbnails live in `img/thumb/`.
+Deep links: `#soccer`, `#baseball`, `#football`, and `#soccer-posters` etc.
+
+Images: `img/t*.jpg` soccer cards, `img/b*.jpg` baseball, `img/f*.jpg` football, `img/ps*.jpg` / `pb*.jpg` / `pf*.jpg` posters (1200px). Grid thumbnails live in `img/thumb/`.

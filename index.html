@@ -4,217 +4,315 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bulldogs Card Picker</title>
-<meta name="description" content="Pick a soccer, baseball or football card design for your player, fill in the details, and send the request to Samson.">
+<meta name="description" content="Pick a soccer, baseball or football card or poster design for your player, fill in the details, and send the request to Samson.">
+<meta name="theme-color" content="#0b0e16">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
   :root {
-    --bg: #0d0f12;
-    --bg2: #15181d;
-    --surface: #1b1f26;
-    --fg: #f3f1ec;
-    --muted: #9aa0a9;
-    --line: #2a2f38;
+    --night: #0b0e16;
+    --night2: #11151f;
+    --slate: #1a1f2b;
+    --line: #2a3040;
+    --chalk: #f2eee6;
+    --muted: #9ba3b1;
     --maroon: #8a1c2b;
     --maroon-hot: #c9273b;
-    --gold: #e0b14c;
+    --gold: #e6b54f;
+    --flood: #9dd3ff;
     --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
     --cond: "Barlow Condensed", "Arial Narrow", sans-serif;
     --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+    --ease: cubic-bezier(.2,.8,.2,1);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+  body { margin: 0; background: var(--night); color: var(--chalk); font-family: var(--body); font-size: 16px; line-height: 1.5; overflow-x: hidden; }
   img { max-width: 100%; display: block; }
+  button { font-family: inherit; }
   [hidden] { display: none !important; }
   a { color: var(--gold); }
-  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+  :focus-visible { outline: 2px solid var(--flood); outline-offset: 2px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
 
-  /* hero */
-  .hero { position: relative; overflow: hidden; background: radial-gradient(1200px 500px at 20% -10%, #4a0f18 0%, transparent 60%), radial-gradient(900px 400px at 100% 0%, #2a1a05 0%, transparent 60%), var(--bg); border-bottom: 1px solid var(--line); }
-  .hero::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 38px, rgba(255,255,255,.025) 38px 40px); pointer-events: none; }
-  .hero .wrap { position: relative; display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center; padding-block: 56px 40px; }
-  .kicker { font-family: var(--cond); font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-size: 13px; margin: 0 0 10px; }
-  h1 { font-family: var(--display); font-weight: 900; font-size: clamp(56px, 10vw, 118px); line-height: .86; margin: 0 0 18px; text-transform: uppercase; letter-spacing: .005em; text-wrap: balance; }
-  h1 em { font-style: normal; color: var(--maroon-hot); }
-  .lede { max-width: 46ch; margin: 0 0 22px; color: var(--muted); font-size: 18px; }
-  .cta { display: inline-flex; gap: 10px; align-items: center; font-family: var(--cond); font-weight: 700; font-size: 18px; letter-spacing: .08em; text-transform: uppercase; background: var(--maroon-hot); color: #fff; text-decoration: none; padding: 14px 22px; border: 0; }
-  .cta:hover { background: #e02e44; }
-  .fan { position: relative; height: 340px; }
-  .fan img { position: absolute; width: 180px; aspect-ratio: 3/4; object-fit: cover; border: 2px solid rgba(255,255,255,.12); box-shadow: 0 30px 60px rgba(0,0,0,.6); transform-origin: bottom center; }
-  .fan img:nth-child(1) { left: 0; bottom: 0; transform: rotate(-14deg); }
-  .fan img:nth-child(2) { left: 22%; bottom: 20px; transform: rotate(-5deg); z-index: 2; }
-  .fan img:nth-child(3) { left: 44%; bottom: 28px; transform: rotate(4deg); z-index: 3; }
-  .fan img:nth-child(4) { left: 64%; bottom: 10px; transform: rotate(13deg); z-index: 1; }
+  /* ---------- hero ---------- */
+  .hero { position: relative; overflow: hidden; min-height: 92vh; display: grid; align-items: center; isolation: isolate; }
+  .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; }
+  .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
+    radial-gradient(900px 500px at 15% 0%, rgba(201,39,59,.28), transparent 60%),
+    radial-gradient(700px 500px at 100% 100%, rgba(157,211,255,.12), transparent 60%),
+    linear-gradient(180deg, transparent 60%, var(--night) 100%); }
+  .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; padding-block: 60px 50px; }
+  .kicker { font-family: var(--cond); font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); font-size: 13px; margin: 0 0 14px; display: flex; gap: 10px; align-items: center; }
+  .kicker::before { content: ""; width: 28px; height: 2px; background: var(--gold); }
+  h1 { font-family: var(--display); font-weight: 900; font-size: clamp(60px, 10.5vw, 128px); line-height: .84; margin: 0 0 20px; text-transform: uppercase; letter-spacing: .005em; }
+  .lede { max-width: 44ch; margin: 0 0 26px; color: var(--muted); font-size: 18px; }
+  .sportpick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 520px; }
+  .sportpick button { position: relative; background: var(--slate); border: 1px solid var(--line); color: var(--chalk); padding: 16px 12px 14px; cursor: pointer; text-align: left; transition: transform .25s var(--ease), border-color .25s, background .25s; overflow: hidden; }
+  .sportpick button span { display: block; }
+  .sportpick .ico { font-size: 28px; line-height: 1; margin-bottom: 8px; }
+  .sportpick .nm { font-family: var(--display); font-weight: 900; font-size: 26px; text-transform: uppercase; line-height: 1; }
+  .sportpick .ct { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .sportpick button:hover { transform: translateY(-3px); border-color: var(--gold); }
+  .sportpick button.on { border-color: var(--gold); background: linear-gradient(160deg, rgba(230,181,79,.16), var(--slate) 60%); }
+  .sportpick button.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--gold); }
 
-  /* steps */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-block: 28px; }
-  .step { border: 1px solid var(--line); background: var(--bg2); padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; }
-  .step b { font-family: var(--display); font-weight: 900; font-size: 40px; line-height: .9; color: var(--gold); }
+  /* holographic hero card */
+  .stage { position: relative; height: 520px; perspective: 1400px; display: grid; place-items: center; }
+  .holo { position: relative; width: min(330px, 78vw); aspect-ratio: 3/4; border-radius: 14px; transform-style: preserve-3d; transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .12s linear; box-shadow: 0 50px 90px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.08); cursor: grab; background: #000; overflow: hidden; }
+  .holo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .5s; }
+  .holo img.on { opacity: 1; }
+  .holo .shine { position: absolute; inset: 0; background:
+    radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.35), transparent 40%),
+    linear-gradient(115deg, transparent 20%, rgba(157,211,255,.18) 45%, rgba(230,181,79,.18) 55%, transparent 80%);
+    background-position: var(--mx,50%) 0; mix-blend-mode: screen; pointer-events: none; }
+  .holo .rim { position: absolute; inset: 0; border-radius: 14px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14), inset 0 0 40px rgba(0,0,0,.4); pointer-events: none; }
+  .stage .shadow { position: absolute; bottom: 20px; width: 60%; height: 30px; background: radial-gradient(closest-side, rgba(201,39,59,.45), transparent); filter: blur(10px); }
+  .stage .tag { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-family: var(--cond); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .stage .tag b { color: var(--chalk); }
+  .stage .hint { position: absolute; top: 8px; right: 8px; font-size: 12px; color: var(--muted); }
+  @media (hover: none) { .stage .hint { display: none; } }
+
+  /* ---------- how it works ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-block: 18px 34px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; background: var(--night2); border: 1px solid var(--line); }
+  .step b { font-family: var(--display); font-weight: 900; font-size: 42px; line-height: .9; color: var(--gold); }
+  .step strong { display: block; font-family: var(--cond); font-size: 18px; text-transform: uppercase; letter-spacing: .06em; }
   .step span { color: var(--muted); font-size: 15px; }
-  .step strong { display: block; color: var(--fg); font-family: var(--cond); font-size: 18px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+  .step.done b { color: var(--flood); }
 
-  /* sport tabs */
-  .sports { border-top: 1px solid var(--line); background: var(--bg2); }
-  .sports .wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
-  .sport { font-family: var(--display); font-weight: 900; font-size: clamp(22px, 4vw, 38px); text-transform: uppercase; letter-spacing: .02em; line-height: 1; background: transparent; color: var(--muted); border: 0; border-bottom: 5px solid transparent; padding: 20px 10px 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .sport small { font: 600 12px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .sport:hover { color: var(--fg); }
-  .sport.on { color: var(--fg); border-bottom-color: var(--maroon-hot); background: linear-gradient(to top, rgba(201,39,59,.12), transparent); }
-  .sport.on small { color: var(--gold); }
+  /* ---------- toolbar ---------- */
+  .bar { position: sticky; top: 0; z-index: 6; background: rgba(11,14,22,.86); backdrop-filter: blur(10px); border-block: 1px solid var(--line); }
+  .bar .wrap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding-block: 10px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); background: var(--night2); padding: 3px; border-radius: 999px; }
+  .seg button { font: 700 13px var(--cond); letter-spacing: .1em; text-transform: uppercase; background: transparent; color: var(--muted); border: 0; padding: 8px 14px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s; }
+  .seg button.on { background: var(--chalk); color: var(--night); }
+  .seg.sport button.on { background: var(--maroon-hot); color: #fff; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 7px 11px; cursor: pointer; border-radius: 999px; }
+  .chip:hover { color: var(--chalk); border-color: var(--muted); }
+  .chip.on { background: var(--gold); color: #1a1200; border-color: var(--gold); }
+  .bar .right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .search { position: relative; }
+  .search input { font: 15px var(--body); background: var(--night2); border: 1px solid var(--line); color: var(--chalk); padding: 8px 12px 8px 32px; border-radius: 999px; width: 170px; }
+  .search::before { content: "⌕"; position: absolute; left: 11px; top: 6px; color: var(--muted); font-size: 17px; }
+  .shuffle { font: 700 13px var(--cond); letter-spacing: .1em; text-transform: uppercase; background: transparent; color: var(--chalk); border: 1px solid var(--line); padding: 8px 12px; border-radius: 999px; cursor: pointer; }
+  .shuffle:hover { border-color: var(--gold); color: var(--gold); }
+  .count { color: var(--muted); font-size: 13px; }
 
-  /* filter bar */
-  .bar { position: sticky; top: 0; z-index: 5; background: rgba(13,15,18,.9); backdrop-filter: blur(8px); border-block: 1px solid var(--line); }
-  .bar .wrap { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-block: 10px; }
-  .bar .sportname { font-family: var(--cond); font-weight: 700; font-size: 16px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin-right: 6px; }
-  .chip { font: 600 13px var(--body); letter-spacing: .06em; text-transform: uppercase; background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 7px 12px; cursor: pointer; }
-  .chip:hover { color: var(--fg); border-color: var(--muted); }
-  .chip.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-  .bar .count { margin-left: auto; color: var(--muted); font-size: 13px; }
-
-  /* grid */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 26px 18px; padding-block: 30px 10px; }
-  .card { background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; transition: transform .18s, border-color .18s; }
-  .card:hover { transform: translateY(-4px); border-color: #3a414c; }
-  .card.picked { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+  /* ---------- grid ---------- */
+  .intro { display: flex; align-items: baseline; gap: 14px; padding-top: 26px; flex-wrap: wrap; }
+  .intro h2 { font-family: var(--display); font-weight: 900; font-size: 44px; text-transform: uppercase; margin: 0; line-height: 1; }
+  .intro p { margin: 0; color: var(--muted); max-width: 60ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 28px 18px; padding-block: 22px 10px; perspective: 1200px; }
+  .card { background: var(--slate); border: 1px solid var(--line); display: flex; flex-direction: column; transform-style: preserve-3d; transform: rotateX(var(--rx,0)) rotateY(var(--ry,0)); transition: transform .15s linear, border-color .2s, box-shadow .2s; position: relative; }
+  .card:hover { border-color: #3b4454; box-shadow: 0 24px 50px rgba(0,0,0,.5); z-index: 1; }
+  .card.picked { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), 0 24px 50px rgba(0,0,0,.5); }
   .thumb { position: relative; margin: 0; padding: 0; border: 0; background: #000; cursor: zoom-in; aspect-ratio: 3/4; overflow: hidden; width: 100%; }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; image-rendering: auto; }
-  .card:hover .thumb img { transform: scale(1.03); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb .foil { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.28), transparent 45%); mix-blend-mode: screen; transition: opacity .2s; pointer-events: none; }
+  .card:hover .foil { opacity: 1; }
   .num { position: absolute; top: 0; left: 0; background: var(--maroon-hot); color: #fff; font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; padding: 7px 10px 5px; }
-  .tag { position: absolute; bottom: 8px; left: 8px; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.65); color: #fff; padding: 3px 7px; }
-  .meta { padding: 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .tagl { position: absolute; bottom: 8px; left: 8px; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.65); color: #fff; padding: 3px 7px; }
+  .fav { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(0,0,0,.55); color: #fff; font-size: 17px; cursor: pointer; display: grid; place-items: center; transition: transform .2s var(--ease), background .2s; }
+  .fav:hover { transform: scale(1.12); }
+  .fav.on { background: var(--maroon-hot); }
+  .meta { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
   .name { font-family: var(--cond); font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: .03em; line-height: 1.05; min-height: 2.1em; }
   .vibe { font-size: 13px; color: var(--muted); margin: 0; min-height: 2.6em; line-height: 1.3; }
-  .pick { font: 700 13px var(--cond); font-size: 15px; letter-spacing: .1em; background: transparent; color: var(--fg); border: 1px solid var(--fg); padding: 9px 12px; cursor: pointer; text-transform: uppercase; }
-  .pick:hover { background: var(--fg); color: var(--bg); }
+  .pick { font: 700 15px var(--cond); letter-spacing: .1em; background: transparent; color: var(--chalk); border: 1px solid var(--chalk); padding: 9px 12px; cursor: pointer; text-transform: uppercase; transition: background .15s, color .15s; }
+  .pick:hover { background: var(--chalk); color: var(--night); }
   .card.picked .pick { background: var(--gold); border-color: var(--gold); color: #1a1200; }
   .card.picked .pick::before { content: "✓ "; }
+  .empty { padding: 60px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line); margin-top: 22px; }
 
-  /* lightbox */
-  .box { position: fixed; inset: 0; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 20; }
-  .box img { max-height: 90vh; max-width: min(100%, 680px); box-shadow: 0 20px 60px rgba(0,0,0,.8); }
-  .box .cap { position: absolute; left: 50%; transform: translateX(-50%); bottom: 16px; color: #fff; font-family: var(--cond); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: .06em; display: flex; gap: 12px; align-items: center; }
-  .box .cap button { font: 700 14px var(--cond); letter-spacing: .1em; text-transform: uppercase; background: var(--gold); color: #1a1200; border: 0; padding: 8px 14px; cursor: pointer; }
-  .box .x, .box .nav { position: absolute; background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.3); width: 44px; height: 44px; font-size: 22px; cursor: pointer; }
+  /* shortlist tray */
+  .tray { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%) translateY(140%); z-index: 8; background: rgba(17,21,31,.95); border: 1px solid var(--line); border-radius: 999px; padding: 8px 10px 8px 14px; display: flex; gap: 10px; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,.6); transition: transform .35s var(--ease); max-width: calc(100vw - 24px); }
+  .tray.show { transform: translateX(-50%) translateY(0); }
+  .tray .lbl { font: 700 12px var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .tray .items { display: flex; gap: 6px; }
+  .tray .items button { width: 46px; height: 61px; border: 2px solid transparent; border-radius: 6px; overflow: hidden; padding: 0; background: #000; cursor: pointer; }
+  .tray .items button.picked { border-color: var(--gold); }
+  .tray .items img { width: 100%; height: 100%; object-fit: cover; }
+  .tray .clear { background: transparent; border: 0; color: var(--muted); cursor: pointer; font-size: 18px; }
+
+  /* ---------- lightbox ---------- */
+  .box { position: fixed; inset: 0; background: rgba(5,6,10,.94); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 20; }
+  .box img { max-height: 88vh; max-width: min(100%, 680px); box-shadow: 0 30px 80px rgba(0,0,0,.8); border-radius: 6px; }
+  .box .cap { position: absolute; left: 50%; transform: translateX(-50%); bottom: 16px; color: #fff; font-family: var(--cond); font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: .06em; display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,.5); padding: 8px 8px 8px 16px; border-radius: 999px; }
+  .box .cap button { font: 700 14px var(--cond); letter-spacing: .1em; text-transform: uppercase; background: var(--gold); color: #1a1200; border: 0; padding: 9px 16px; cursor: pointer; border-radius: 999px; }
+  .box .x, .box .nav { position: absolute; background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.25); width: 46px; height: 46px; font-size: 22px; cursor: pointer; border-radius: 50%; }
   .box .x { top: 14px; right: 14px; }
   .box .nav { top: 50%; transform: translateY(-50%); }
   .box .prev { left: 12px; } .box .next { right: 12px; }
 
-  /* form */
-  .form { margin-block: 44px 70px; background: var(--bg2); border: 1px solid var(--line); border-top: 6px solid var(--maroon-hot); padding: 26px; }
-  .form h2 { font-family: var(--display); font-weight: 900; font-size: 44px; margin: 0 0 4px; text-transform: uppercase; line-height: 1; }
-  .form > p { margin: 0 0 20px; color: var(--muted); }
+  /* ---------- form ---------- */
+  .form { margin-block: 50px 70px; display: grid; grid-template-columns: 340px 1fr; gap: 30px; align-items: start; }
+  .preview { position: sticky; top: 76px; }
+  .pv { position: relative; aspect-ratio: 3/4; background: var(--slate); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; place-items: center; color: var(--muted); text-align: center; padding: 20px; }
+  .pv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .pv .plate { position: absolute; left: 10px; right: 10px; bottom: 10px; background: rgba(8,10,16,.82); border: 1px solid rgba(255,255,255,.14); border-radius: 8px; padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; text-align: left; backdrop-filter: blur(6px); }
+  .pv .plate .pn { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: .95; text-transform: uppercase; color: #fff; word-break: break-word; }
+  .pv .plate .pj { font-family: var(--display); font-weight: 900; font-size: 34px; line-height: .9; color: var(--gold); grid-row: 1 / span 2; align-self: center; }
+  .pv .plate .pp { font: 600 11px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .pv .plate .logo { position: absolute; top: -34px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--maroon-hot); color: #fff; font: 900 11px var(--display); display: grid; place-items: center; border: 2px solid #fff; }
+  .pv .plate .logo.off { display: none; }
+  .pv .ph { font-size: 15px; }
+  .pv .ph b { display: block; font-family: var(--display); font-weight: 900; font-size: 34px; text-transform: uppercase; color: var(--chalk); line-height: 1; margin-bottom: 6px; }
+  .pvnote { margin: 10px 0 0; font-size: 13px; color: var(--muted); text-align: center; }
+  .panel { background: var(--night2); border: 1px solid var(--line); border-top: 6px solid var(--maroon-hot); padding: 26px; }
+  .panel h2 { font-family: var(--display); font-weight: 900; font-size: 44px; margin: 0 0 4px; text-transform: uppercase; line-height: 1; }
+  .panel > p { margin: 0 0 20px; color: var(--muted); }
   .chosen { font-family: var(--cond); font-weight: 700; font-size: 20px; text-transform: uppercase; color: var(--gold); letter-spacing: .04em; }
   .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
   label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); min-width: 0; }
-  input, select, textarea { font: 16px var(--body); padding: 11px 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); width: 100%; }
+  input, select, textarea { font: 16px var(--body); padding: 11px 12px; border: 1px solid var(--line); background: var(--night); color: var(--chalk); width: 100%; border-radius: 6px; }
   input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
   .full { grid-column: 1 / -1; }
   .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .choice label { flex-direction: row; align-items: center; gap: 10px; border: 1px solid var(--line); padding: 12px; cursor: pointer; font-size: 15px; text-transform: none; letter-spacing: 0; color: var(--fg); font-weight: 500; background: var(--bg); }
+  .choice label { flex-direction: row; align-items: center; gap: 10px; border: 1px solid var(--line); padding: 12px; cursor: pointer; font-size: 15px; text-transform: none; letter-spacing: 0; color: var(--chalk); font-weight: 500; background: var(--night); border-radius: 6px; }
   .choice label:has(input:checked) { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
   .choice input { width: 18px; height: 18px; accent-color: var(--gold); margin: 0; }
   .choice small { display: block; color: var(--muted); font-size: 12px; }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; align-items: center; }
-  .btn { font: 700 16px var(--cond); letter-spacing: .1em; border: 2px solid var(--maroon-hot); background: var(--maroon-hot); color: #fff; padding: 12px 22px; cursor: pointer; text-transform: uppercase; }
-  .btn:disabled { opacity: .6; cursor: default; }
-  .btn.ghost { background: transparent; color: var(--fg); border-color: var(--fg); }
+  .btn { font: 700 16px var(--cond); letter-spacing: .1em; border: 2px solid var(--maroon-hot); background: var(--maroon-hot); color: #fff; padding: 12px 24px; cursor: pointer; text-transform: uppercase; border-radius: 999px; transition: transform .15s var(--ease), background .15s; }
+  .btn:hover { transform: translateY(-2px); background: #e02e44; }
+  .btn:disabled { opacity: .6; cursor: default; transform: none; }
+  .btn.ghost { background: transparent; color: var(--chalk); border-color: var(--chalk); }
   .out { margin-top: 16px; }
   .out textarea { min-height: 170px; resize: vertical; }
   .note { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
   .ok { color: var(--gold); font-weight: 700; }
   footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; padding-block: 18px 40px; }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 30; }
 
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; padding-block: 36px 24px; }
+    .stage { height: 480px; order: -1; padding-bottom: 36px; }
+    .stage .hint { display: none; }
+    .form { grid-template-columns: 1fr; }
+    .preview { position: static; max-width: 300px; margin: 0 auto; }
+  }
   @media (max-width: 760px) {
-    .hero .wrap { grid-template-columns: 1fr; padding-block: 36px 28px; }
-    .fan { height: 220px; }
-    .fan img { width: 120px; }
     .steps { grid-template-columns: 1fr; }
     .choice { grid-template-columns: 1fr; }
-    .sport { font-size: 20px; padding: 14px 4px 12px; letter-spacing: 0; }
-    .sport small { font-size: 10px; letter-spacing: .06em; }
+    .sportpick .nm { font-size: 20px; }
+    .search input { width: 130px; }
+    .bar .right { margin-left: 0; }
   }
-  @media (prefers-reduced-motion: reduce) { .card, .thumb img { transition: none; } html { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .card, .holo, .sportpick button, .btn, .tray { transition: none !important; }
+    .hero canvas { display: none; }
+  }
 </style>
 </head>
 <body>
 
+<canvas id="confetti"></canvas>
+
 <header class="hero">
+  <canvas id="sky" aria-hidden="true"></canvas>
   <div class="wrap">
     <div>
-      <p class="kicker">Bulldogs Cards · Soccer · Baseball · Football · 2026</p>
-      <h1>Pick your<br>player's <em>card</em></h1>
-      <p class="lede">61 designs across three sports. Pick your sport, pick a design, fill in your player's details, hit send, and Samson will build the card and get it back to you.</p>
-      <a class="cta" href="#designs">Browse the designs ↓</a>
+      <p class="kicker">Bulldogs Cards · 2026 season</p>
+      <h1>Pick your<br>player's<br>card</h1>
+      <p class="lede">76 designs: trading cards and full-size posters for soccer, baseball and football. Pick a design, type in your player's details, and Samson builds it and gets it back to you. Free for Bulldogs families.</p>
+      <div class="sportpick" id="sportpick" role="tablist" aria-label="Sport">
+        <button role="tab" data-s="soccer" class="on"><span class="ico">⚽</span><span class="nm">Soccer</span><span class="ct">37 cards · 5 posters</span></button>
+        <button role="tab" data-s="baseball"><span class="ico">⚾</span><span class="nm">Baseball</span><span class="ct">12 cards · 5 posters</span></button>
+        <button role="tab" data-s="football"><span class="ico">🏈</span><span class="nm">Football</span><span class="ct">12 cards · 5 posters</span></button>
+      </div>
     </div>
-    <div class="fan" aria-hidden="true">
-      <img src="img/thumb/t22.jpg" alt=""><img src="img/thumb/b4.jpg" alt=""><img src="img/thumb/f9.jpg" alt=""><img src="img/thumb/t17.jpg" alt="">
+    <div class="stage" id="stage">
+      <div class="shadow"></div>
+      <div class="holo" id="holo" aria-hidden="true"><div class="shine"></div><div class="rim"></div></div>
+      <span class="hint">move your mouse ✦ click to open</span>
+      <p class="tag" id="holotag"></p>
     </div>
   </div>
 </header>
 
-<nav class="sports" id="sports" aria-label="Sport">
-  <div class="wrap">
-    <button class="sport on" data-s="soccer">⚽ Soccer<small>37 designs</small></button>
-    <button class="sport" data-s="baseball">⚾ Baseball<small>12 designs</small></button>
-    <button class="sport" data-s="football">🏈 Football<small>12 designs</small></button>
-  </div>
-</nav>
-
-<section class="wrap steps">
-  <div class="step"><b>1</b><div><strong>Pick a design</strong><span>Choose your sport, then tap any card to see it big. Hit Pick this one when you've found it.</span></div></div>
-  <div class="step"><b>2</b><div><strong>Fill in the details</strong><span>Name, number, position, and whether you want the NBT logo on it.</span></div></div>
-  <div class="step"><b>3</b><div><strong>Send it</strong><span>Hit Send. Then text or email Samson 1 or 2 action photos of your player.</span></div></div>
+<section class="wrap steps" id="steps">
+  <div class="step" id="s1"><b>1</b><div><strong>Pick a design</strong><span>Choose your sport and card or poster. Tap any one to see it big, then hit Pick this one.</span></div></div>
+  <div class="step" id="s2"><b>2</b><div><strong>Fill in the details</strong><span>Name, number, position, and whether you want the NBT logo. Watch the preview update.</span></div></div>
+  <div class="step" id="s3"><b>3</b><div><strong>Send it</strong><span>Hit Send. Then text or email Samson 1 or 2 action photos of your player.</span></div></div>
 </section>
 
 <div class="bar" id="designs">
   <div class="wrap">
-    <span class="sportname" id="sportname">Soccer</span>
-    <span id="chips"></span>
-    <span class="count" id="count"></span>
+    <div class="seg sport" id="segSport">
+      <button data-s="soccer" class="on">⚽ Soccer</button>
+      <button data-s="baseball">⚾ Baseball</button>
+      <button data-s="football">🏈 Football</button>
+    </div>
+    <div class="seg" id="segKind">
+      <button data-k="cards" class="on">Cards</button>
+      <button data-k="posters">Posters</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="right">
+      <div class="search"><input id="q" type="search" placeholder="Search" aria-label="Search designs"></div>
+      <button class="shuffle" id="shuffle" type="button">Surprise me</button>
+      <span class="count" id="count"></span>
+    </div>
   </div>
 </div>
 
 <main class="wrap">
+  <div class="intro"><h2 id="introH">Soccer cards</h2><p id="introP"></p></div>
   <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>Nothing matches that. Try another word or clear the filter.</div>
 
   <section class="form" id="form">
-    <h2>Player details</h2>
-    <p>Chosen design: <span class="chosen" id="chosen">none yet, pick one above</span></p>
-    <form id="req">
-      <div class="fields">
-        <label>First name <input id="first" required autocomplete="off"></label>
-        <label>Last name <input id="last" required autocomplete="off"></label>
-        <label>Jersey number <input id="num" inputmode="numeric" placeholder="10"></label>
-        <label>Position
-          <select id="pos"></select>
-        </label>
-        <label>Team <input id="team" value="Bulldogs Boys" placeholder="Team name"></label>
-        <label>Year <input id="year" value="2026" inputmode="numeric"></label>
-        <div class="full">
-          <label style="margin-bottom:8px">NBT logo on the card?</label>
-          <div class="choice">
-            <label><input type="radio" name="logo" value="Yes" checked> Yes, include the NBT logo<small>Club crest in the corner, like the jerseys</small></label>
-            <label><input type="radio" name="logo" value="No"> No logo<small>Just the player, name and number</small></label>
+    <aside class="preview">
+      <div class="pv" id="pv">
+        <div class="ph"><b>Your card</b>Pick a design above and it shows up here with your player's name.</div>
+      </div>
+      <p class="pvnote">Rough preview. The real one is built by hand with your photos.</p>
+    </aside>
+    <div class="panel">
+      <h2>Player details</h2>
+      <p>Chosen design: <span class="chosen" id="chosen">none yet, pick one above</span></p>
+      <form id="req">
+        <div class="fields">
+          <label>First name <input id="first" required autocomplete="off"></label>
+          <label>Last name <input id="last" required autocomplete="off"></label>
+          <label>Jersey number <input id="num" inputmode="numeric" placeholder="10"></label>
+          <label>Position <select id="pos"></select></label>
+          <label>Team <input id="team" value="Bulldogs Boys" placeholder="Team name"></label>
+          <label>Year <input id="year" value="2026" inputmode="numeric"></label>
+          <div class="full">
+            <label style="margin-bottom:8px">NBT logo on the card?</label>
+            <div class="choice">
+              <label><input type="radio" name="logo" value="Yes" checked> Yes, include the NBT logo<small>Club crest in the corner, like the jerseys</small></label>
+              <label><input type="radio" name="logo" value="No"> No logo<small>Just the player, name and number</small></label>
+            </div>
           </div>
+          <label class="full">Parent name and best way to reach you <input id="contact" placeholder="Jane, text 919-555-0100"></label>
+          <label class="full">Anything else (favorite photo, colors, nickname) <textarea id="notes" rows="2"></textarea></label>
         </div>
-        <label class="full">Parent name and best way to reach you <input id="contact" placeholder="Jane, text 919-555-0100"></label>
-        <label class="full">Anything else (favorite photo, colors, nickname) <textarea id="notes" rows="2"></textarea></label>
-      </div>
-      <div class="actions">
-        <button class="btn" type="submit" id="send">Send to Samson</button>
-        <button class="btn ghost" type="button" id="copy" hidden>Copy request</button>
-        <span id="status" class="note"></span>
-      </div>
-      <div class="out" id="out" hidden>
-        <p class="note" id="done"></p>
-        <label>Copy of your request <textarea id="msg" readonly></textarea></label>
-      </div>
-    </form>
+        <div class="actions">
+          <button class="btn" type="submit" id="send">Send to Samson</button>
+          <button class="btn ghost" type="button" id="copy" hidden>Copy request</button>
+          <span id="status" class="note"></span>
+        </div>
+        <div class="out" id="out" hidden>
+          <p class="note" id="done"></p>
+          <label>Copy of your request <textarea id="msg" readonly></textarea></label>
+        </div>
+      </form>
+    </div>
   </section>
 </main>
 
 <footer><div class="wrap">Made for the Bulldogs families. Cards are free; photos stay private and are only used for your player's card.</div></footer>
+
+<div class="tray" id="tray" aria-label="Shortlist">
+  <span class="lbl">Shortlist</span>
+  <div class="items" id="trayItems"></div>
+  <button class="clear" id="trayClear" type="button" aria-label="Clear shortlist">×</button>
+</div>
 
 <div class="box" id="box" hidden>
   <button class="x" id="close" aria-label="Close">×</button>
@@ -226,12 +324,12 @@
 
 <script>
   var KEY = "29fea687-26fa-466e-81ae-d5277b4fd706";
-  var LABEL = { splatter: "Splatter", stadium: "Stadium", fire: "Fire & Gold", future: "Futuristic", clean: "Clean", fun: "Fun", retro: "Retro" };
+  var LABEL = { splatter: "Splatter", stadium: "Stadium", fire: "Fire & Gold", future: "Futuristic", clean: "Clean", fun: "Fun", retro: "Retro", sky: "Sky", storm: "Storm" };
+  var ORDER = ["splatter", "stadium", "fire", "future", "clean", "fun", "retro", "sky", "storm"];
   var SPORTS = {
-    soccer: {
-      label: "Soccer", p: "t", team: "Bulldogs Boys",
+    soccer: { label: "Soccer", p: "t", pp: "ps", team: "Bulldogs Boys", ball: "⚽",
       positions: ["Goalkeeper", "Defender", "Midfielder", "Forward", "Striker", "Winger"],
-      items: [
+      cards: [
         { n: 1,  name: "Ember Smoke",       f: "fire",     vibe: "Orange smoke burst, black and white" },
         { n: 2,  name: "Sky Panels",        f: "clean",    vibe: "Tilted blue panels, clean and bright" },
         { n: 3,  name: "Blue Streak",       f: "clean",    vibe: "Big vertical name, racing stripes" },
@@ -269,12 +367,18 @@
         { n: 35, name: "Synthwave",         f: "future",   vibe: "80s neon grid and sunset" },
         { n: 36, name: "Carbon Racing",     f: "future",   vibe: "Carbon fiber, racing stripes" },
         { n: 37, name: "Jungle",            f: "fun",      vibe: "Vines, monstera leaves, sun shafts" }
+      ],
+      posters: [
+        { n: 1, name: "Cloud Island",   f: "sky",     vibe: "Floating pitch in the clouds, sunrise light" },
+        { n: 2, name: "Stadium Tunnel", f: "stadium", vibe: "Out of the tunnel into the floodlights" },
+        { n: 3, name: "Inferno",        f: "fire",    vibe: "Flames, embers, ball on fire" },
+        { n: 4, name: "Storm Pitch",    f: "storm",   vibe: "Lightning and rain over a wet pitch" },
+        { n: 5, name: "Gold Confetti",  f: "fire",    vibe: "Black and gold, trophy and confetti" }
       ]
     },
-    baseball: {
-      label: "Baseball", p: "b", team: "",
+    baseball: { label: "Baseball", p: "b", pp: "pb", team: "", ball: "⚾",
       positions: ["Pitcher", "Catcher", "First Base", "Second Base", "Third Base", "Shortstop", "Left Field", "Center Field", "Right Field", "Utility"],
-      items: [
+      cards: [
         { n: 1,  name: "Vintage Card",         f: "retro",   vibe: "Aged cardstock, old-time ballpark" },
         { n: 2,  name: "Infield Dirt",         f: "stadium", vibe: "Clay baseline, chalk and cleat marks" },
         { n: 3,  name: "Wood & Leather",       f: "retro",   vibe: "Bat grain and glove stitching" },
@@ -287,12 +391,18 @@
         { n: 10, name: "Chrome Refractor",     f: "future",  vibe: "Rainbow chrome card finish" },
         { n: 11, name: "Dugout Chalkboard",    f: "fun",     vibe: "Chalk lineup and diamond diagram" },
         { n: 12, name: "Gold Championship",    f: "fire",    vibe: "Black and gold, trophy shine" }
+      ],
+      posters: [
+        { n: 1, name: "Cloud Diamond",    f: "sky",     vibe: "Floating infield in the clouds, bat and ball" },
+        { n: 2, name: "Stadium Lights",   f: "stadium", vibe: "Night ballpark from home plate" },
+        { n: 3, name: "Dust Slide",       f: "storm",   vibe: "Infield dirt explosion, warm light" },
+        { n: 4, name: "Vintage Ballpark", f: "retro",   vibe: "Sepia grandstands, pennants, old glove" },
+        { n: 5, name: "Gold Confetti",    f: "fire",    vibe: "Black and gold, trophy, bat and ball" }
       ]
     },
-    football: {
-      label: "Football", p: "f", team: "",
+    football: { label: "Football", p: "f", pp: "pf", team: "", ball: "🏈",
       positions: ["Quarterback", "Running Back", "Wide Receiver", "Tight End", "Offensive Line", "Defensive Line", "Linebacker", "Cornerback", "Safety", "Kicker"],
-      items: [
+      cards: [
         { n: 1,  name: "Night Gridiron Blue",   f: "stadium", vibe: "Yard lines under lights, blue smoke" },
         { n: 2,  name: "Night Gridiron Red",    f: "stadium", vibe: "Yard lines under lights, red smoke" },
         { n: 3,  name: "Night Gridiron Orange", f: "stadium", vibe: "Yard lines under lights, orange smoke" },
@@ -305,111 +415,285 @@
         { n: 10, name: "Comic Blitz",           f: "fun",     vibe: "Pop-art burst, halftone dots" },
         { n: 11, name: "Pigskin Leather",       f: "clean",   vibe: "Pebbled leather and white laces" },
         { n: 12, name: "Retro 70s Stripes",     f: "retro",   vibe: "Cream card, orange and brown stripes" }
+      ],
+      posters: [
+        { n: 1, name: "Cloud Gridiron",  f: "sky",     vibe: "Floating 50-yard line in the clouds" },
+        { n: 2, name: "Tunnel Smoke",    f: "stadium", vibe: "Out of the tunnel into the lights" },
+        { n: 3, name: "Turf Explosion",  f: "storm",   vibe: "Turf and pellets flying, hard light" },
+        { n: 4, name: "Storm Field",     f: "storm",   vibe: "Lightning and rain over the field" },
+        { n: 5, name: "Gold Confetti",   f: "fire",    vibe: "Black and gold, trophy and football" }
       ]
     }
   };
-  var ORDER = ["splatter", "stadium", "fire", "future", "clean", "fun", "retro"];
-  var sport = "soccer", T = SPORTS.soccer.items, picked = null, cur = 0, filter = "all";
-  var grid = document.getElementById("grid");
-  var teamTouched = false;
-  document.getElementById("team").addEventListener("input", function () { teamTouched = true; });
+  var INTRO = {
+    cards: "Classic trading cards. Two photo frames, big name down the side, number and position.",
+    posters: "Full-size posters. Your player is cut out of the photo and dropped into the scene, like a pro's wall poster. Needs one clear head-and-shoulders photo and one action shot."
+  };
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $ = function (id) { return document.getElementById(id); };
 
-  function img(t, thumb) { return "img/" + (thumb ? "thumb/" : "") + SPORTS[sport].p + t.n + ".jpg"; }
-  function title(t) { return SPORTS[sport].label + " #" + t.n + " " + t.name; }
+  // ---------- state ----------
+  var sport = "soccer", kind = "cards", filter = "all", query = "";
+  var picked = null, cur = 0, LIST = [];
+  var favs = [];
+  try { favs = JSON.parse(localStorage.getItem("bulldogs-favs") || "[]"); } catch (e) { favs = []; }
 
+  function S() { return SPORTS[sport]; }
+  function prefix(k, s) { return (k || kind) === "posters" ? SPORTS[s || sport].pp : SPORTS[s || sport].p; }
+  function imgSrc(t, thumb, k, s) { return "img/" + (thumb ? "thumb/" : "") + prefix(k, s) + t.n + ".jpg"; }
+  function title(t, k, s) { var SS = SPORTS[s || sport]; return SS.label + " " + ((k || kind) === "posters" ? "poster" : "card") + " #" + t.n + " " + t.name; }
+  function key(t, k, s) { return (s || sport) + "/" + (k || kind) + "/" + t.n; }
+
+  // ---------- hero sky ----------
+  (function sky() {
+    var c = $("sky"), ctx = c.getContext("2d"), pts = [], W, H;
+    function size() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; }
+    size(); window.addEventListener("resize", size);
+    for (var i = 0; i < 90; i++) pts.push({ x: Math.random(), y: Math.random(), r: Math.random() * 1.6 + .3, s: Math.random() * .25 + .05, t: Math.random() * 6 });
+    if (reduce) return;
+    function tick(ts) {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i]; p.y -= p.s / H; if (p.y < -0.02) { p.y = 1.02; p.x = Math.random(); }
+        var a = .35 + .35 * Math.sin(ts / 900 + p.t);
+        ctx.fillStyle = i % 7 === 0 ? "rgba(230,181,79," + a + ")" : "rgba(157,211,255," + a + ")";
+        ctx.beginPath(); ctx.arc(p.x * W, p.y * H, p.r, 0, 6.283); ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  // ---------- holographic hero card ----------
+  var holo = $("holo"), stage = $("stage"), holoList = [], holoI = 0, holoTimer;
+  function buildHolo() {
+    holoList = [];
+    ["soccer", "baseball", "football"].forEach(function (s) {
+      SPORTS[s].cards.slice(-4).forEach(function (t) { holoList.push({ s: s, k: "cards", t: t }); });
+      SPORTS[s].posters.slice(0, 2).forEach(function (t) { holoList.push({ s: s, k: "posters", t: t }); });
+    });
+    holoList.sort(function () { return Math.random() - .5; });
+    holo.querySelectorAll("img").forEach(function (i) { i.remove(); });
+    holoList.forEach(function (h) { var im = new Image(); im.src = imgSrc(h.t, true, h.k, h.s); im.alt = ""; holo.insertBefore(im, holo.firstChild); });
+    showHolo(0);
+    clearInterval(holoTimer);
+    if (!reduce) holoTimer = setInterval(function () { showHolo(holoI + 1); }, 2800);
+  }
+  function showHolo(i) {
+    holoI = (i + holoList.length) % holoList.length;
+    var imgs = holo.querySelectorAll("img");
+    imgs.forEach(function (im, j) { im.classList.toggle("on", j === holoList.length - 1 - holoI); });
+    var h = holoList[holoI];
+    $("holotag").innerHTML = SPORTS[h.s].ball + " <b>" + h.t.name + "</b> · " + SPORTS[h.s].label + " " + (h.k === "posters" ? "poster" : "card");
+  }
+  function tilt(el, e, max) {
+    var r = el.getBoundingClientRect();
+    var x = ((e.clientX - r.left) / r.width), y = ((e.clientY - r.top) / r.height);
+    el.style.setProperty("--ry", ((x - .5) * max) + "deg");
+    el.style.setProperty("--rx", ((.5 - y) * max) + "deg");
+    el.style.setProperty("--mx", (x * 100) + "%");
+    el.style.setProperty("--my", (y * 100) + "%");
+  }
+  function untilt(el) { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); }
+  if (!reduce) {
+    stage.addEventListener("pointermove", function (e) { tilt(holo, e, 26); });
+    stage.addEventListener("pointerleave", function () { untilt(holo); });
+  }
+  holo.addEventListener("click", function () {
+    var h = holoList[holoI]; sport = h.s; kind = h.k; render();
+    var t = h.t; var i = LIST.indexOf(t); if (i >= 0) open(i);
+  });
+  buildHolo();
+
+  // ---------- render grid ----------
   function render() {
-    var S = SPORTS[sport]; T = S.items; filter = "all";
-    grid.innerHTML = "";
-    T.forEach(function (t, i) {
+    var SS = S(); LIST = SS[kind]; filter = "all";
+    document.querySelectorAll("#sportpick button, #segSport button").forEach(function (b) { b.classList.toggle("on", b.dataset.s === sport); });
+    document.querySelectorAll("#segKind button").forEach(function (b) { b.classList.toggle("on", b.dataset.k === kind); });
+    $("introH").textContent = SS.label + " " + kind;
+    $("introP").textContent = INTRO[kind];
+    var grid = $("grid"); grid.innerHTML = "";
+    LIST.forEach(function (t, i) {
       var c = document.createElement("article");
-      c.className = "card"; c.id = S.p + t.n; c.dataset.f = t.f;
+      c.className = "card"; c.id = "c-" + prefix() + t.n; c.dataset.f = t.f; c.dataset.q = (t.name + " " + t.vibe + " " + LABEL[t.f]).toLowerCase();
+      var isFav = favs.indexOf(key(t)) >= 0;
       c.innerHTML =
-        '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="' + img(t, true) + '" alt="' + title(t) + '" loading="lazy"><span class="tag">' + LABEL[t.f] + '</span></button>' +
+        '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="' + imgSrc(t, true) + '" alt="' + title(t) + '" loading="lazy"><span class="foil"></span><span class="tagl">' + LABEL[t.f] + '</span></button>' +
+        '<button class="fav' + (isFav ? " on" : "") + '" type="button" aria-label="Shortlist ' + t.name + '" aria-pressed="' + isFav + '">' + (isFav ? "♥" : "♡") + '</button>' +
         '<div class="meta"><div class="name">' + t.name + '</div><p class="vibe">' + t.vibe + '</p><button class="pick" type="button">Pick this one</button></div>';
       c.querySelector(".thumb").addEventListener("click", function () { open(i); });
       c.querySelector(".pick").addEventListener("click", function () { pick(t); });
+      c.querySelector(".fav").addEventListener("click", function () { toggleFav(t); });
+      if (!reduce && matchMedia("(hover:hover)").matches) {
+        c.addEventListener("pointermove", function (e) { tilt(c, e, 10); });
+        c.addEventListener("pointerleave", function () { untilt(c); });
+      }
       grid.appendChild(c);
     });
-    // style chips for this sport
-    var have = {}; T.forEach(function (t) { have[t.f] = 1; });
+    var have = {}; LIST.forEach(function (t) { have[t.f] = 1; });
     var chips = '<button class="chip on" data-f="all">All</button>';
     ORDER.forEach(function (k) { if (have[k]) chips += '<button class="chip" data-f="' + k + '">' + LABEL[k] + '</button>'; });
-    document.getElementById("chips").innerHTML = chips;
+    $("chips").innerHTML = chips;
     document.querySelectorAll(".chip").forEach(function (b) {
       b.addEventListener("click", function () {
         document.querySelectorAll(".chip").forEach(function (x) { x.classList.remove("on"); });
         b.classList.add("on"); filter = b.dataset.f; applyFilter();
       });
     });
-    document.getElementById("sportname").textContent = S.label;
-    document.querySelectorAll(".sport").forEach(function (b) { b.classList.toggle("on", b.dataset.s === sport); });
-    // positions
-    var pos = document.getElementById("pos"); pos.innerHTML = "";
-    S.positions.forEach(function (p) { var o = document.createElement("option"); o.textContent = p; pos.appendChild(o); });
-    if (!teamTouched) document.getElementById("team").value = S.team;
-    picked = null;
-    document.getElementById("chosen").textContent = "none yet, pick one above";
+    var pos = $("pos"); pos.innerHTML = "";
+    SS.positions.forEach(function (p) { var o = document.createElement("option"); o.textContent = p; pos.appendChild(o); });
+    if (!teamTouched) $("team").value = SS.team;
+    if (picked && (picked.s !== sport || picked.k !== kind)) { /* keep pick across tabs */ }
+    markPicked();
     applyFilter();
+    renderTray();
+    preview();
   }
-
   function applyFilter() {
-    var n = 0;
-    document.querySelectorAll(".card").forEach(function (c) { var show = filter === "all" || c.dataset.f === filter; c.hidden = !show; if (show) n++; });
-    document.getElementById("count").textContent = n + " of " + T.length;
+    var n = 0, q = query.trim().toLowerCase();
+    document.querySelectorAll(".card").forEach(function (c) {
+      var show = (filter === "all" || c.dataset.f === filter) && (!q || c.dataset.q.indexOf(q) >= 0);
+      c.hidden = !show; if (show) n++;
+    });
+    $("count").textContent = n + " of " + LIST.length;
+    $("empty").hidden = n > 0;
   }
-
-  document.querySelectorAll(".sport").forEach(function (b) {
+  function markPicked() {
+    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", !!picked && picked.s === sport && picked.k === kind && c.id === "c-" + prefix() + picked.t.n); });
+  }
+  $("q").addEventListener("input", function () { query = this.value; applyFilter(); });
+  $("shuffle").addEventListener("click", function () {
+    var vis = Array.prototype.filter.call(document.querySelectorAll(".card"), function (c) { return !c.hidden; });
+    if (!vis.length) return;
+    var c = vis[Math.floor(Math.random() * vis.length)];
+    var i = Array.prototype.indexOf.call(document.querySelectorAll(".card"), c);
+    open(i);
+  });
+  document.querySelectorAll("#sportpick button, #segSport button").forEach(function (b) {
     b.addEventListener("click", function () {
-      if (b.dataset.s === sport) return;
       sport = b.dataset.s; render();
-      if (history.replaceState) history.replaceState(null, "", "#" + sport);
-      document.getElementById("designs").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (history.replaceState) history.replaceState(null, "", "#" + sport + (kind === "posters" ? "-posters" : ""));
+      $("designs").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     });
   });
-  if (SPORTS[location.hash.slice(1)]) sport = location.hash.slice(1);
-  render();
+  document.querySelectorAll("#segKind button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      kind = b.dataset.k; render();
+      if (history.replaceState) history.replaceState(null, "", "#" + sport + (kind === "posters" ? "-posters" : ""));
+    });
+  });
+  (function fromHash() {
+    var h = location.hash.slice(1).split("-");
+    if (SPORTS[h[0]]) sport = h[0];
+    if (h[1] === "posters") kind = "posters";
+  })();
 
-  function pick(t) {
-    picked = t;
-    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", c.id === SPORTS[sport].p + t.n); });
-    document.getElementById("chosen").textContent = title(t);
-    close();
-    document.getElementById("form").scrollIntoView({ behavior: "smooth", block: "start" });
+  // ---------- shortlist ----------
+  function toggleFav(t) {
+    var k = key(t), i = favs.indexOf(k);
+    if (i >= 0) favs.splice(i, 1); else { if (favs.length >= 4) favs.shift(); favs.push(k); }
+    try { localStorage.setItem("bulldogs-favs", JSON.stringify(favs)); } catch (e) {}
+    render();
   }
+  function findByKey(k) {
+    var p = k.split("/"); var SS = SPORTS[p[0]]; if (!SS) return null;
+    var t = SS[p[1]].filter(function (x) { return x.n == p[2]; })[0];
+    return t ? { s: p[0], k: p[1], t: t } : null;
+  }
+  function renderTray() {
+    var tray = $("tray"), items = $("trayItems"); items.innerHTML = "";
+    var list = favs.map(findByKey).filter(Boolean);
+    list.forEach(function (h) {
+      var b = document.createElement("button"); b.type = "button"; b.title = title(h.t, h.k, h.s);
+      b.className = picked && picked.s === h.s && picked.k === h.k && picked.t.n === h.t.n ? "picked" : "";
+      b.innerHTML = '<img src="' + imgSrc(h.t, true, h.k, h.s) + '" alt="">';
+      b.addEventListener("click", function () { sport = h.s; kind = h.k; render(); pick(h.t); });
+      items.appendChild(b);
+    });
+    tray.classList.toggle("show", list.length > 0);
+  }
+  $("trayClear").addEventListener("click", function () { favs = []; try { localStorage.removeItem("bulldogs-favs"); } catch (e) {} render(); });
 
-  var box = document.getElementById("box");
+  // ---------- pick + preview ----------
+  var teamTouched = false;
+  $("team").addEventListener("input", function () { teamTouched = true; });
+  function pick(t) {
+    picked = { s: sport, k: kind, t: t };
+    markPicked(); renderTray();
+    $("chosen").textContent = title(t);
+    $("s1").classList.add("done");
+    close(); preview();
+    $("form").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    setTimeout(function () { $("first").focus({ preventScroll: true }); }, 500);
+  }
+  function v(id) { return $(id).value.trim(); }
+  function preview() {
+    var pv = $("pv");
+    if (!picked) { pv.innerHTML = '<div class="ph"><b>Your card</b>Pick a design above and it shows up here with your player\'s name.</div>'; return; }
+    var first = v("first"), last = v("last"), num = v("num"), pos = $("pos").value;
+    var logo = document.querySelector('input[name="logo"]:checked').value === "Yes";
+    var nm = (first || last) ? (first + " " + last).trim() : "Player name";
+    pv.innerHTML = '<img src="' + imgSrc(picked.t, false, picked.k, picked.s) + '" alt="">' +
+      '<div class="plate"><span class="logo' + (logo ? "" : " off") + '">NBT</span><span class="pn">' + esc(nm) + '</span><span class="pj">' + (num ? "#" + esc(num) : "") + '</span><span class="pp">' + esc(pos) + ' · ' + esc(v("team") || SPORTS[picked.s].label) + ' ' + esc(v("year")) + '</span></div>';
+    if (first || last) $("s2").classList.add("done");
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  ["first", "last", "num", "pos", "team", "year"].forEach(function (id) { $(id).addEventListener("input", preview); $(id).addEventListener("change", preview); });
+  document.querySelectorAll('input[name="logo"]').forEach(function (r) { r.addEventListener("change", preview); });
+
+  // ---------- lightbox ----------
+  var box = $("box");
   function show() {
-    var t = T[cur];
-    document.getElementById("boximg").src = img(t, false);
-    document.getElementById("boximg").alt = title(t);
-    document.getElementById("boxcap").textContent = title(t);
+    var t = LIST[cur];
+    $("boximg").src = imgSrc(t, false);
+    $("boximg").alt = title(t);
+    $("boxcap").textContent = title(t);
   }
   function open(i) { cur = i; show(); box.hidden = false; }
   function close() { box.hidden = true; }
-  function step(d) { cur = (cur + d + T.length) % T.length; show(); }
-  document.getElementById("close").addEventListener("click", close);
-  document.getElementById("prev").addEventListener("click", function () { step(-1); });
-  document.getElementById("next").addEventListener("click", function () { step(1); });
-  document.getElementById("boxpick").addEventListener("click", function () { pick(T[cur]); });
+  function step(d) { cur = (cur + d + LIST.length) % LIST.length; show(); }
+  $("close").addEventListener("click", close);
+  $("prev").addEventListener("click", function () { step(-1); });
+  $("next").addEventListener("click", function () { step(1); });
+  $("boxpick").addEventListener("click", function () { pick(LIST[cur]); });
   box.addEventListener("click", function (e) { if (e.target === box) close(); });
   document.addEventListener("keydown", function (e) {
     if (box.hidden) return;
-    if (e.key === "Escape") close(); else if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowRight") step(1);
+    if (e.key === "Escape") close(); else if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowRight") step(1); else if (e.key === "Enter") pick(LIST[cur]);
   });
+  (function swipe() {
+    var x0 = null;
+    box.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    box.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); x0 = null; });
+  })();
 
-  var status = document.getElementById("status");
-  document.getElementById("req").addEventListener("submit", function (e) {
+  // ---------- confetti ----------
+  function confetti() {
+    if (reduce) return;
+    var c = $("confetti"), ctx = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
+    var cols = ["#e6b54f", "#c9273b", "#f2eee6", "#9dd3ff"], ps = [];
+    for (var i = 0; i < 160; i++) ps.push({ x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * .6, vx: (Math.random() - .5) * 14, vy: -Math.random() * 16 - 6, w: Math.random() * 8 + 4, h: Math.random() * 6 + 3, r: Math.random() * 6.28, vr: (Math.random() - .5) * .3, col: cols[i % 4] });
+    var t0 = performance.now();
+    (function frame(ts) {
+      ctx.clearRect(0, 0, c.width, c.height);
+      ps.forEach(function (p) { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.vx *= .99; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.col; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); });
+      if (ts - t0 < 2600) requestAnimationFrame(frame); else ctx.clearRect(0, 0, c.width, c.height);
+    })(t0);
+  }
+
+  // ---------- submit ----------
+  var status = $("status");
+  $("req").addEventListener("submit", function (e) {
     e.preventDefault();
-    if (!picked) { status.textContent = "Pick a design first (tap Pick this one on a card)."; status.className = "note"; document.getElementById("designs").scrollIntoView({ behavior: "smooth" }); return; }
-    var v = function (id) { return document.getElementById(id).value.trim(); };
+    if (!picked) { status.textContent = "Pick a design first (tap Pick this one on a card)."; status.className = "note"; $("designs").scrollIntoView({ behavior: "smooth" }); return; }
     var logo = document.querySelector('input[name="logo"]:checked').value;
-    var L = SPORTS[sport].label;
+    var L = SPORTS[picked.s].label, K = picked.k === "posters" ? "poster" : "card";
     var lines = [
-      L + " card request",
-      "Design: " + title(picked),
+      L + " " + K + " request",
+      "Design: " + title(picked.t, picked.k, picked.s),
       "Player: " + v("first") + " " + v("last"),
       "Number: " + (v("num") || "none"),
-      "Position: " + v("pos"),
+      "Position: " + $("pos").value,
       "Team: " + v("team"),
       "Year: " + v("year"),
       "NBT logo: " + logo,
@@ -417,8 +701,8 @@
     ];
     if (v("notes")) lines.push("Notes: " + v("notes"));
     var body = lines.join("\n");
-    document.getElementById("msg").value = body;
-    var btn = document.getElementById("send");
+    $("msg").value = body;
+    var btn = $("send");
     btn.disabled = true; btn.textContent = "Sending...";
     status.textContent = ""; status.className = "note";
     fetch("https://api.web3forms.com/submit", {
@@ -426,30 +710,29 @@
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         access_key: KEY,
-        subject: L + " card: " + v("first") + " " + v("last") + " (" + title(picked) + ", logo " + logo + ")",
+        subject: L + " " + K + ": " + v("first") + " " + v("last") + " (" + title(picked.t, picked.k, picked.s) + ", logo " + logo + ")",
         from_name: "Bulldogs Card Picker",
         message: body
       })
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j.success) throw new Error(j.message || "failed");
-      document.getElementById("done").innerHTML = "<span class=\"ok\">Sent.</span> Samson has your request. One more thing: text or email him 1 or 2 action photos of your player (phone photos are fine, the bigger the better).";
-      document.getElementById("out").hidden = false;
-      document.getElementById("copy").hidden = false;
-      btn.textContent = "Sent";
+      $("done").innerHTML = "<span class=\"ok\">Sent.</span> Samson has your request. One more thing: text or email him " + (picked.k === "posters" ? "a clear head-and-shoulders photo and an action shot" : "1 or 2 action photos") + " of your player (phone photos are fine, the bigger the better).";
+      $("out").hidden = false; $("copy").hidden = false;
+      btn.textContent = "Sent"; $("s3").classList.add("done"); confetti();
     }).catch(function () {
-      document.getElementById("done").textContent = "It didn't go through. Copy the request below and text or email it to Samson instead.";
-      document.getElementById("out").hidden = false;
-      document.getElementById("copy").hidden = false;
+      $("done").textContent = "It didn't go through. Copy the request below and text or email it to Samson instead.";
+      $("out").hidden = false; $("copy").hidden = false;
       btn.disabled = false; btn.textContent = "Try again";
     });
   });
-  document.getElementById("copy").addEventListener("click", function () {
-    var ta = document.getElementById("msg");
+  $("copy").addEventListener("click", function () {
+    var ta = $("msg");
     var done = function () { status.textContent = "Copied."; status.className = "note ok"; };
     var fallback = function () { ta.focus(); ta.select(); status.textContent = "Select the text above and copy it."; status.className = "note"; };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, fallback);
-    else fallback();
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, fallback); else fallback();
   });
+
+  render();
 </script>
 </body>
 </html>
