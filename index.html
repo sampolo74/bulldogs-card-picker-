@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bulldogs Card Picker</title>
-<meta name="description" content="Pick a soccer card design for your player, fill in the details, and send the request to Samson.">
+<meta name="description" content="Pick a soccer, baseball or football card design for your player, fill in the details, and send the request to Samson.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
@@ -54,9 +54,19 @@
   .step span { color: var(--muted); font-size: 15px; }
   .step strong { display: block; color: var(--fg); font-family: var(--cond); font-size: 18px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
 
+  /* sport tabs */
+  .sports { border-top: 1px solid var(--line); background: var(--bg2); }
+  .sports .wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+  .sport { font-family: var(--display); font-weight: 900; font-size: clamp(22px, 4vw, 38px); text-transform: uppercase; letter-spacing: .02em; line-height: 1; background: transparent; color: var(--muted); border: 0; border-bottom: 5px solid transparent; padding: 20px 10px 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .sport small { font: 600 12px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .sport:hover { color: var(--fg); }
+  .sport.on { color: var(--fg); border-bottom-color: var(--maroon-hot); background: linear-gradient(to top, rgba(201,39,59,.12), transparent); }
+  .sport.on small { color: var(--gold); }
+
   /* filter bar */
   .bar { position: sticky; top: 0; z-index: 5; background: rgba(13,15,18,.9); backdrop-filter: blur(8px); border-block: 1px solid var(--line); }
   .bar .wrap { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-block: 10px; }
+  .bar .sportname { font-family: var(--cond); font-weight: 700; font-size: 16px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin-right: 6px; }
   .chip { font: 600 13px var(--body); letter-spacing: .06em; text-transform: uppercase; background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 7px 12px; cursor: pointer; }
   .chip:hover { color: var(--fg); border-color: var(--muted); }
   .chip.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
@@ -73,7 +83,7 @@
   .num { position: absolute; top: 0; left: 0; background: var(--maroon-hot); color: #fff; font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; padding: 7px 10px 5px; }
   .tag { position: absolute; bottom: 8px; left: 8px; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.65); color: #fff; padding: 3px 7px; }
   .meta { padding: 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
-  .name { font-family: var(--cond); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: .03em; line-height: 1; min-height: 1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .name { font-family: var(--cond); font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: .03em; line-height: 1.05; min-height: 2.1em; }
   .vibe { font-size: 13px; color: var(--muted); margin: 0; min-height: 2.6em; line-height: 1.3; }
   .pick { font: 700 13px var(--cond); font-size: 15px; letter-spacing: .1em; background: transparent; color: var(--fg); border: 1px solid var(--fg); padding: 9px 12px; cursor: pointer; text-transform: uppercase; }
   .pick:hover { background: var(--fg); color: var(--bg); }
@@ -121,6 +131,8 @@
     .fan img { width: 120px; }
     .steps { grid-template-columns: 1fr; }
     .choice { grid-template-columns: 1fr; }
+    .sport { font-size: 20px; padding: 14px 4px 12px; letter-spacing: 0; }
+    .sport small { font-size: 10px; letter-spacing: .06em; }
   }
   @media (prefers-reduced-motion: reduce) { .card, .thumb img { transition: none; } html { scroll-behavior: auto; } }
 </style>
@@ -130,32 +142,35 @@
 <header class="hero">
   <div class="wrap">
     <div>
-      <p class="kicker">NBT Soccer · Bulldogs Boys · 2026</p>
+      <p class="kicker">Bulldogs Cards · Soccer · Baseball · Football · 2026</p>
       <h1>Pick your<br>player's <em>card</em></h1>
-      <p class="lede">25 designs to choose from. Pick one, fill in your player's details, hit send, and Samson will build the card and get it back to you.</p>
+      <p class="lede">61 designs across three sports. Pick your sport, pick a design, fill in your player's details, hit send, and Samson will build the card and get it back to you.</p>
       <a class="cta" href="#designs">Browse the designs ↓</a>
     </div>
     <div class="fan" aria-hidden="true">
-      <img src="img/thumb/t22.jpg" alt=""><img src="img/thumb/t13.jpg" alt=""><img src="img/thumb/t21.jpg" alt=""><img src="img/thumb/t17.jpg" alt="">
+      <img src="img/thumb/t22.jpg" alt=""><img src="img/thumb/b4.jpg" alt=""><img src="img/thumb/f9.jpg" alt=""><img src="img/thumb/t17.jpg" alt="">
     </div>
   </div>
 </header>
 
+<nav class="sports" id="sports" aria-label="Sport">
+  <div class="wrap">
+    <button class="sport on" data-s="soccer">⚽ Soccer<small>37 designs</small></button>
+    <button class="sport" data-s="baseball">⚾ Baseball<small>12 designs</small></button>
+    <button class="sport" data-s="football">🏈 Football<small>12 designs</small></button>
+  </div>
+</nav>
+
 <section class="wrap steps">
-  <div class="step"><b>1</b><div><strong>Pick a design</strong><span>Tap any card to see it big. Hit Pick this one when you've found it.</span></div></div>
+  <div class="step"><b>1</b><div><strong>Pick a design</strong><span>Choose your sport, then tap any card to see it big. Hit Pick this one when you've found it.</span></div></div>
   <div class="step"><b>2</b><div><strong>Fill in the details</strong><span>Name, number, position, and whether you want the NBT logo on it.</span></div></div>
   <div class="step"><b>3</b><div><strong>Send it</strong><span>Hit Send. Then text or email Samson 1 or 2 action photos of your player.</span></div></div>
 </section>
 
 <div class="bar" id="designs">
   <div class="wrap">
-    <button class="chip on" data-f="all">All</button>
-    <button class="chip" data-f="splatter">Splatter</button>
-    <button class="chip" data-f="stadium">Stadium</button>
-    <button class="chip" data-f="fire">Fire &amp; Gold</button>
-    <button class="chip" data-f="future">Futuristic</button>
-    <button class="chip" data-f="clean">Clean</button>
-    <button class="chip" data-f="fun">Fun</button>
+    <span class="sportname" id="sportname">Soccer</span>
+    <span id="chips"></span>
     <span class="count" id="count"></span>
   </div>
 </div>
@@ -172,11 +187,9 @@
         <label>Last name <input id="last" required autocomplete="off"></label>
         <label>Jersey number <input id="num" inputmode="numeric" placeholder="10"></label>
         <label>Position
-          <select id="pos">
-            <option>Goalkeeper</option><option>Defender</option><option>Midfielder</option><option>Forward</option><option>Striker</option><option>Winger</option>
-          </select>
+          <select id="pos"></select>
         </label>
-        <label>Team <input id="team" value="Bulldogs Boys"></label>
+        <label>Team <input id="team" value="Bulldogs Boys" placeholder="Team name"></label>
         <label>Year <input id="year" value="2026" inputmode="numeric"></label>
         <div class="full">
           <label style="margin-bottom:8px">NBT logo on the card?</label>
@@ -213,65 +226,153 @@
 
 <script>
   var KEY = "29fea687-26fa-466e-81ae-d5277b4fd706";
-  var T = [
-    { n: 1,  name: "Ember Smoke",     f: "fire",     vibe: "Orange smoke burst, black and white" },
-    { n: 2,  name: "Sky Panels",      f: "clean",    vibe: "Tilted blue panels, clean and bright" },
-    { n: 3,  name: "Blue Streak",     f: "clean",    vibe: "Big vertical name, racing stripes" },
-    { n: 4,  name: "Torn Edge",       f: "clean",    vibe: "Ripped concrete, red headline" },
-    { n: 5,  name: "Big Ball",        f: "clean",    vibe: "Soccer ball close-up, blue and orange" },
-    { n: 6,  name: "Gold Splash",     f: "stadium",  vibe: "Sepia stadium, gold paint splatter" },
-    { n: 7,  name: "Stadium Fog",     f: "stadium",  vibe: "Night lights and smoke, glowing text" },
-    { n: 8,  name: "Blue Arc",        f: "stadium",  vibe: "Royal blue curve over the stadium" },
-    { n: 9,  name: "Foil Card",       f: "fun",      vibe: "Holographic rainbow trading card" },
-    { n: 10, name: "Comic Cover",     f: "fun",      vibe: "Halftone dots, POW burst, comic lettering" },
-    { n: 11, name: "Ticket Stub",     f: "fun",      vibe: "Retro 90s admit-one ticket" },
-    { n: 12, name: "Chalk Tactics",   f: "fun",      vibe: "Coach's whiteboard, chalk arrows" },
-    { n: 13, name: "Maroon Splatter", f: "splatter", vibe: "Bulldogs maroon brush strokes, two photos" },
-    { n: 14, name: "Blue Splatter",   f: "splatter", vibe: "Royal blue brush strokes, two photos" },
-    { n: 15, name: "Diagonal Split",  f: "clean",    vibe: "Black and white split, red number" },
-    { n: 16, name: "Navy Gold Burst", f: "splatter", vibe: "Night stadium, gold paint explosion" },
-    { n: 17, name: "Cyber HUD",       f: "future",   vibe: "Neon cyan hex grid, targeting brackets" },
-    { n: 18, name: "Chrome Neon",     f: "future",   vibe: "Magenta and blue light trails" },
-    { n: 19, name: "Glitch Grid",     f: "future",   vibe: "Wireframe stadium, lime laser floor" },
-    { n: 20, name: "Night Stadium",   f: "stadium",  vibe: "Floodlights and a packed crowd" },
-    { n: 21, name: "Inferno",         f: "fire",     vibe: "Roaring flames, fireball soccer ball" },
-    { n: 22, name: "Gold Champion",   f: "fire",     vibe: "Black marble, gold trophy and laurels" },
-    { n: 23, name: "Lightning Storm", f: "future",   vibe: "Purple and blue bolts over a wet pitch" },
-    { n: 24, name: "Golden Hour",     f: "stadium",  vibe: "Sunset pouring out of the tunnel" },
-    { n: 25, name: "Fireball",        f: "fire",     vibe: "Flaming soccer ball, glowing outline name" }
-  ];
-  var LABEL = { splatter: "Splatter", stadium: "Stadium", fire: "Fire & Gold", future: "Futuristic", clean: "Clean", fun: "Fun" };
-  var picked = null, cur = 0, filter = "all";
+  var LABEL = { splatter: "Splatter", stadium: "Stadium", fire: "Fire & Gold", future: "Futuristic", clean: "Clean", fun: "Fun", retro: "Retro" };
+  var SPORTS = {
+    soccer: {
+      label: "Soccer", p: "t", team: "Bulldogs Boys",
+      positions: ["Goalkeeper", "Defender", "Midfielder", "Forward", "Striker", "Winger"],
+      items: [
+        { n: 1,  name: "Ember Smoke",       f: "fire",     vibe: "Orange smoke burst, black and white" },
+        { n: 2,  name: "Sky Panels",        f: "clean",    vibe: "Tilted blue panels, clean and bright" },
+        { n: 3,  name: "Blue Streak",       f: "clean",    vibe: "Big vertical name, racing stripes" },
+        { n: 4,  name: "Torn Edge",         f: "clean",    vibe: "Ripped concrete, red headline" },
+        { n: 5,  name: "Big Ball",          f: "clean",    vibe: "Soccer ball close-up, blue and orange" },
+        { n: 6,  name: "Gold Splash",       f: "stadium",  vibe: "Sepia stadium, gold paint splatter" },
+        { n: 7,  name: "Stadium Fog",       f: "stadium",  vibe: "Night lights and smoke, glowing text" },
+        { n: 8,  name: "Blue Arc",          f: "stadium",  vibe: "Royal blue curve over the stadium" },
+        { n: 9,  name: "Foil Card",         f: "fun",      vibe: "Holographic rainbow trading card" },
+        { n: 10, name: "Comic Cover",       f: "fun",      vibe: "Halftone dots, POW burst, comic lettering" },
+        { n: 11, name: "Ticket Stub",       f: "fun",      vibe: "Retro 90s admit-one ticket" },
+        { n: 12, name: "Chalk Tactics",     f: "fun",      vibe: "Coach's whiteboard, chalk arrows" },
+        { n: 13, name: "Maroon Splatter",   f: "splatter", vibe: "Bulldogs maroon brush strokes, two photos" },
+        { n: 14, name: "Blue Splatter",     f: "splatter", vibe: "Royal blue brush strokes, two photos" },
+        { n: 15, name: "Diagonal Split",    f: "clean",    vibe: "Black and white split, red number" },
+        { n: 16, name: "Navy Gold Burst",   f: "splatter", vibe: "Night stadium, gold paint explosion" },
+        { n: 17, name: "Cyber HUD",         f: "future",   vibe: "Neon cyan hex grid, targeting brackets" },
+        { n: 18, name: "Chrome Neon",       f: "future",   vibe: "Magenta and blue light trails" },
+        { n: 19, name: "Glitch Grid",       f: "future",   vibe: "Wireframe stadium, lime laser floor" },
+        { n: 20, name: "Night Stadium",     f: "stadium",  vibe: "Floodlights and a packed crowd" },
+        { n: 21, name: "Inferno",           f: "fire",     vibe: "Roaring flames, fireball soccer ball" },
+        { n: 22, name: "Gold Champion",     f: "fire",     vibe: "Black marble, gold trophy and laurels" },
+        { n: 23, name: "Lightning Storm",   f: "future",   vibe: "Purple and blue bolts over a wet pitch" },
+        { n: 24, name: "Golden Hour",       f: "stadium",  vibe: "Sunset pouring out of the tunnel" },
+        { n: 25, name: "Fireball",          f: "fire",     vibe: "Flaming soccer ball, glowing outline name" },
+        { n: 26, name: "Stained Glass",     f: "fun",      vibe: "Cathedral window, jewel-tone glass" },
+        { n: 27, name: "Graffiti Wall",     f: "fun",      vibe: "Spray-paint tags on a brick wall" },
+        { n: 28, name: "Frozen Ice",        f: "future",   vibe: "Ice crystals, frosted glowing name" },
+        { n: 29, name: "Match Day Gazette", f: "clean",    vibe: "Old newspaper front page" },
+        { n: 30, name: "Galaxy",            f: "future",   vibe: "Deep space, nebula and stars" },
+        { n: 31, name: "Manga Burst",       f: "fun",      vibe: "Anime speed lines, ink splash" },
+        { n: 32, name: "Blueprint",         f: "clean",    vibe: "Architect's drafting paper, white lines" },
+        { n: 33, name: "Paper Cut",         f: "clean",    vibe: "Layered cut-paper shapes" },
+        { n: 34, name: "Marble Statue",     f: "fire",     vibe: "Carved marble and gold veins" },
+        { n: 35, name: "Synthwave",         f: "future",   vibe: "80s neon grid and sunset" },
+        { n: 36, name: "Carbon Racing",     f: "future",   vibe: "Carbon fiber, racing stripes" },
+        { n: 37, name: "Jungle",            f: "fun",      vibe: "Vines, monstera leaves, sun shafts" }
+      ]
+    },
+    baseball: {
+      label: "Baseball", p: "b", team: "",
+      positions: ["Pitcher", "Catcher", "First Base", "Second Base", "Third Base", "Shortstop", "Left Field", "Center Field", "Right Field", "Utility"],
+      items: [
+        { n: 1,  name: "Vintage Card",         f: "retro",   vibe: "Aged cardstock, old-time ballpark" },
+        { n: 2,  name: "Infield Dirt",         f: "stadium", vibe: "Clay baseline, chalk and cleat marks" },
+        { n: 3,  name: "Wood & Leather",       f: "retro",   vibe: "Bat grain and glove stitching" },
+        { n: 4,  name: "Night Diamond Blue",   f: "stadium", vibe: "Floodlit field, blue smoke" },
+        { n: 5,  name: "Night Diamond Red",    f: "stadium", vibe: "Floodlit field, red smoke" },
+        { n: 6,  name: "Night Diamond Orange", f: "stadium", vibe: "Floodlit field, orange smoke" },
+        { n: 7,  name: "Retro Scoreboard",     f: "retro",   vibe: "Hand-flipped scoreboard numbers" },
+        { n: 8,  name: "Comic Homerun",        f: "fun",     vibe: "Halftone dots, home run burst" },
+        { n: 9,  name: "Red Laces",            f: "clean",   vibe: "Giant baseball seam close-up" },
+        { n: 10, name: "Chrome Refractor",     f: "future",  vibe: "Rainbow chrome card finish" },
+        { n: 11, name: "Dugout Chalkboard",    f: "fun",     vibe: "Chalk lineup and diamond diagram" },
+        { n: 12, name: "Gold Championship",    f: "fire",    vibe: "Black and gold, trophy shine" }
+      ]
+    },
+    football: {
+      label: "Football", p: "f", team: "",
+      positions: ["Quarterback", "Running Back", "Wide Receiver", "Tight End", "Offensive Line", "Defensive Line", "Linebacker", "Cornerback", "Safety", "Kicker"],
+      items: [
+        { n: 1,  name: "Night Gridiron Blue",   f: "stadium", vibe: "Yard lines under lights, blue smoke" },
+        { n: 2,  name: "Night Gridiron Red",    f: "stadium", vibe: "Yard lines under lights, red smoke" },
+        { n: 3,  name: "Night Gridiron Orange", f: "stadium", vibe: "Yard lines under lights, orange smoke" },
+        { n: 4,  name: "Turf Lights",           f: "stadium", vibe: "Turf close-up, stadium glow" },
+        { n: 5,  name: "Steel Armor",           f: "future",  vibe: "Brushed steel plates and rivets" },
+        { n: 6,  name: "Tunnel Smoke",          f: "stadium", vibe: "Stadium tunnel, smoke and spotlights" },
+        { n: 7,  name: "Chalkboard Playbook",   f: "fun",     vibe: "X's and O's play diagram" },
+        { n: 8,  name: "Shattered Glass",       f: "future",  vibe: "Football bursting through glass" },
+        { n: 9,  name: "Gold Trophy",           f: "fire",    vibe: "Black and gold, trophy and confetti" },
+        { n: 10, name: "Comic Blitz",           f: "fun",     vibe: "Pop-art burst, halftone dots" },
+        { n: 11, name: "Pigskin Leather",       f: "clean",   vibe: "Pebbled leather and white laces" },
+        { n: 12, name: "Retro 70s Stripes",     f: "retro",   vibe: "Cream card, orange and brown stripes" }
+      ]
+    }
+  };
+  var ORDER = ["splatter", "stadium", "fire", "future", "clean", "fun", "retro"];
+  var sport = "soccer", T = SPORTS.soccer.items, picked = null, cur = 0, filter = "all";
   var grid = document.getElementById("grid");
+  var teamTouched = false;
+  document.getElementById("team").addEventListener("input", function () { teamTouched = true; });
 
-  T.forEach(function (t, i) {
-    var c = document.createElement("article");
-    c.className = "card"; c.id = "t" + t.n; c.dataset.f = t.f;
-    c.innerHTML =
-      '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="img/thumb/t' + t.n + '.jpg" alt="Design ' + t.n + ', ' + t.name + '" loading="lazy"><span class="tag">' + LABEL[t.f] + '</span></button>' +
-      '<div class="meta"><div class="name">' + t.name + '</div><p class="vibe">' + t.vibe + '</p><button class="pick" type="button">Pick this one</button></div>';
-    c.querySelector(".thumb").addEventListener("click", function () { open(i); });
-    c.querySelector(".pick").addEventListener("click", function () { pick(t); });
-    grid.appendChild(c);
-  });
+  function img(t, thumb) { return "img/" + (thumb ? "thumb/" : "") + SPORTS[sport].p + t.n + ".jpg"; }
+  function title(t) { return SPORTS[sport].label + " #" + t.n + " " + t.name; }
+
+  function render() {
+    var S = SPORTS[sport]; T = S.items; filter = "all";
+    grid.innerHTML = "";
+    T.forEach(function (t, i) {
+      var c = document.createElement("article");
+      c.className = "card"; c.id = S.p + t.n; c.dataset.f = t.f;
+      c.innerHTML =
+        '<button class="thumb" type="button" aria-label="Enlarge ' + t.name + '"><span class="num">' + t.n + '</span><img src="' + img(t, true) + '" alt="' + title(t) + '" loading="lazy"><span class="tag">' + LABEL[t.f] + '</span></button>' +
+        '<div class="meta"><div class="name">' + t.name + '</div><p class="vibe">' + t.vibe + '</p><button class="pick" type="button">Pick this one</button></div>';
+      c.querySelector(".thumb").addEventListener("click", function () { open(i); });
+      c.querySelector(".pick").addEventListener("click", function () { pick(t); });
+      grid.appendChild(c);
+    });
+    // style chips for this sport
+    var have = {}; T.forEach(function (t) { have[t.f] = 1; });
+    var chips = '<button class="chip on" data-f="all">All</button>';
+    ORDER.forEach(function (k) { if (have[k]) chips += '<button class="chip" data-f="' + k + '">' + LABEL[k] + '</button>'; });
+    document.getElementById("chips").innerHTML = chips;
+    document.querySelectorAll(".chip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.querySelectorAll(".chip").forEach(function (x) { x.classList.remove("on"); });
+        b.classList.add("on"); filter = b.dataset.f; applyFilter();
+      });
+    });
+    document.getElementById("sportname").textContent = S.label;
+    document.querySelectorAll(".sport").forEach(function (b) { b.classList.toggle("on", b.dataset.s === sport); });
+    // positions
+    var pos = document.getElementById("pos"); pos.innerHTML = "";
+    S.positions.forEach(function (p) { var o = document.createElement("option"); o.textContent = p; pos.appendChild(o); });
+    if (!teamTouched) document.getElementById("team").value = S.team;
+    picked = null;
+    document.getElementById("chosen").textContent = "none yet, pick one above";
+    applyFilter();
+  }
 
   function applyFilter() {
     var n = 0;
     document.querySelectorAll(".card").forEach(function (c) { var show = filter === "all" || c.dataset.f === filter; c.hidden = !show; if (show) n++; });
     document.getElementById("count").textContent = n + " of " + T.length;
   }
-  document.querySelectorAll(".chip").forEach(function (b) {
+
+  document.querySelectorAll(".sport").forEach(function (b) {
     b.addEventListener("click", function () {
-      document.querySelectorAll(".chip").forEach(function (x) { x.classList.remove("on"); });
-      b.classList.add("on"); filter = b.dataset.f; applyFilter();
+      if (b.dataset.s === sport) return;
+      sport = b.dataset.s; render();
+      if (history.replaceState) history.replaceState(null, "", "#" + sport);
+      document.getElementById("designs").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
-  applyFilter();
+  if (SPORTS[location.hash.slice(1)]) sport = location.hash.slice(1);
+  render();
 
   function pick(t) {
     picked = t;
-    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", c.id === "t" + t.n); });
-    document.getElementById("chosen").textContent = "#" + t.n + " " + t.name;
+    document.querySelectorAll(".card").forEach(function (c) { c.classList.toggle("picked", c.id === SPORTS[sport].p + t.n); });
+    document.getElementById("chosen").textContent = title(t);
     close();
     document.getElementById("form").scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -279,9 +380,9 @@
   var box = document.getElementById("box");
   function show() {
     var t = T[cur];
-    document.getElementById("boximg").src = "img/t" + t.n + ".jpg";
-    document.getElementById("boximg").alt = "Design " + t.n + ", " + t.name;
-    document.getElementById("boxcap").textContent = "#" + t.n + " " + t.name;
+    document.getElementById("boximg").src = img(t, false);
+    document.getElementById("boximg").alt = title(t);
+    document.getElementById("boxcap").textContent = title(t);
   }
   function open(i) { cur = i; show(); box.hidden = false; }
   function close() { box.hidden = true; }
@@ -302,9 +403,10 @@
     if (!picked) { status.textContent = "Pick a design first (tap Pick this one on a card)."; status.className = "note"; document.getElementById("designs").scrollIntoView({ behavior: "smooth" }); return; }
     var v = function (id) { return document.getElementById(id).value.trim(); };
     var logo = document.querySelector('input[name="logo"]:checked').value;
+    var L = SPORTS[sport].label;
     var lines = [
-      "Soccer card request",
-      "Design: #" + picked.n + " " + picked.name,
+      L + " card request",
+      "Design: " + title(picked),
       "Player: " + v("first") + " " + v("last"),
       "Number: " + (v("num") || "none"),
       "Position: " + v("pos"),
@@ -324,7 +426,7 @@
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         access_key: KEY,
-        subject: "Soccer card: " + v("first") + " " + v("last") + " (#" + picked.n + " " + picked.name + ", logo " + logo + ")",
+        subject: L + " card: " + v("first") + " " + v("last") + " (" + title(picked) + ", logo " + logo + ")",
         from_name: "Bulldogs Card Picker",
         message: body
       })
